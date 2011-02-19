@@ -2,4 +2,5 @@ build
 .metadata
 .project
 .classpath
+bin
 *~
