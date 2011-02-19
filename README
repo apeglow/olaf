@@ -1,0 +1,10 @@
+OLAF Understanding -
+===================
+OLAF is a service for real time analysis of online events. Main use case is
+the analysis of ip-address-usage on several platforms
+
+OLAF Requirements -
+==================
+- Java 6
+
+
