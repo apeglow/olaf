@@ -3,8 +3,8 @@ package de.mobile.olaf.server;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,9 +26,11 @@ public class Olaf {
 	/**
 	 * This map will be stored either in a database or a config file later.
 	 */
-	public final static Map<String, Site> ipAddress2SiteMap = new HashMap<String, Site>();
+	public final static List<Site> ipAddress2SiteMap = new ArrayList<Site>();
 	static {
-		ipAddress2SiteMap.put("127.0.0.1", new Site("test", Country.DE, SiteType.GENERAL_CLASSIFIED));
+		ipAddress2SiteMap.add(new Site("mobile.de", Country.DE, SiteType.MOTORS_CLASSIFIED));
+		ipAddress2SiteMap.add(new Site("marktplaats", Country.NL, SiteType.GENERAL_CLASSIFIED));
+		ipAddress2SiteMap.add(new Site("annunci", Country.IT, SiteType.GENERAL_CLASSIFIED));
 	}
 	
 	private final Log logger = LogFactory.getLog(getClass());

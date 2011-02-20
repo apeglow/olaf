@@ -25,5 +25,10 @@ public class Site {
 		return type;
 	}
 	
+	@Override
+	public String toString() {
+		return name + " ("+type+" in "+country+")";
+	}
+	
 
 }

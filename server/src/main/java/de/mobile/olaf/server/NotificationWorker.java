@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Arrays;
+import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +19,9 @@ import de.mobile.olaf.server.domain.Site;
  *
  */
 public class NotificationWorker implements Runnable {
+	private final Random siteDie = new Random();
+	
+	
 	private final Log logger = LogFactory.getLog(getClass());
 	private final DatagramPacket datagramPacket;
 	private final IpAddressUsageNotificationService ipAddressUsageNotificationService;
@@ -30,7 +34,10 @@ public class NotificationWorker implements Runnable {
 	@Override
 	public void run() {
 		InetAddress address = datagramPacket.getAddress();
-		Site site = Olaf.ipAddress2SiteMap.get(address.getHostAddress());
+//		Site site = Olaf.ipAddress2SiteMap.get(address.getHostAddress());
+		
+		Site site = Olaf.ipAddress2SiteMap.get(siteDie.nextInt(Olaf.ipAddress2SiteMap.size()));
+		
 		if (site != null){
 			byte[] data = datagramPacket.getData();
 			
