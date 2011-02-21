@@ -35,21 +35,21 @@ public class IpAddressUsageEventUpdateListener implements UpdateListener {
 	 */
 	@Override
 	public void update(EventBean[] newEvents, EventBean[] oldEvents) {
-		EventBean eventBean = newEvents[0];
-		String ip = (String)eventBean.get(IpUsedEvent.IP_PROP_NAME);
-		Long count = (Long)eventBean.get("nr");
-		
-		if (count > 1){
-			String query = "select * from IpAddressWindow where address='"+ip+"'";
-			EPOnDemandQueryResult result = epServiceProvider.getEPRuntime().executeQuery(query);
+		for (EventBean eventBean : newEvents){
+			String ip = (String)eventBean.get(IpUsedEvent.IP_PROP_NAME);
+			Long count = (Long)eventBean.get("nr");
 			
-			IpStatusChangedEvent ipStatusChangeEvent = convertToIpStatusChangeEvent(result);
-			if (ipStatusChangeEvent == null || !ipStatusChangeEvent.isUsedUnusually()){
-				ipStatusChangeEvent = new IpStatusChangedEvent(ip, true);
-				epServiceProvider.getEPRuntime().sendEvent(ipStatusChangeEvent);
-			} 
+			if (count > 1){
+				String query = "select * from IpAddressWindow where address='"+ip+"'";
+				EPOnDemandQueryResult result = epServiceProvider.getEPRuntime().executeQuery(query);
+				
+				IpStatusChangedEvent ipStatusChangeEvent = convertToIpStatusChangeEvent(result);
+				if (ipStatusChangeEvent == null || !ipStatusChangeEvent.isUsedUnusually()){
+					ipStatusChangeEvent = new IpStatusChangedEvent(ip, true);
+					epServiceProvider.getEPRuntime().sendEvent(ipStatusChangeEvent);
+				} 
+			}
 		}
-		
 	}
 	
 	
