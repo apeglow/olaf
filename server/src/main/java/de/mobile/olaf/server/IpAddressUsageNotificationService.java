@@ -6,14 +6,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
 
-import de.mobile.olaf.server.communication.out.PartnersNotificationService;
 import de.mobile.olaf.server.domain.IpUsageEventType;
 import de.mobile.olaf.server.domain.PartnerSite;
-import de.mobile.olaf.server.esper.IpAddressRatedAsAnomalouslyUsedEventListener;
-import de.mobile.olaf.server.esper.IpAddressUsageEventUpdateListener;
 import de.mobile.olaf.server.esper.event.IpUsedEvent;
 
 /**
