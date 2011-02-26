@@ -1,0 +1,21 @@
+{namespace de.mobile.olaf.api.rest}
+
+
+/**
+ *
+ * Generate xml for the REST request.
+ *
+ * @param events
+ *
+ */
+{template .xml}
+	<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	<olaf:ipStatusChangedEvents xmlns:olaf="http://www.mobile.de/olaf/api/rest/namespace">
+		{foreach $event in $events}
+			<olaf:events>
+				<olaf:newCompleteStatus olaf:address="{$event.address}" olaf:isUsedForSpam="{$event.spam}" olaf:isUsedForFraud="{$event.fraud}" olaf:isUsedAnomalously="{$event.anomalously}" />
+				<olaf:newStatus>{$event.newProperty}</olaf:newStatus>
+			</olaf:events>
+		{/foreach}
+	</olaf:ipStatusChangedEvents>
+{/template}

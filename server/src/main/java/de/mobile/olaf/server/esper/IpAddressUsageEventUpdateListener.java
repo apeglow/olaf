@@ -44,7 +44,7 @@ public class IpAddressUsageEventUpdateListener implements UpdateListener {
 				EPOnDemandQueryResult result = epServiceProvider.getEPRuntime().executeQuery(query);
 				
 				IpStatusChangedEvent ipStatusChangeEvent = convertToIpStatusChangeEvent(result);
-				if (ipStatusChangeEvent == null || !ipStatusChangeEvent.isUsedUnusually()){
+				if (ipStatusChangeEvent == null || !ipStatusChangeEvent.isUsedAnomalously()){
 					ipStatusChangeEvent = new IpStatusChangedEvent(ip, true);
 					epServiceProvider.getEPRuntime().sendEvent(ipStatusChangeEvent);
 				} 
@@ -63,7 +63,7 @@ public class IpAddressUsageEventUpdateListener implements UpdateListener {
 		if (currentVersionIterator.hasNext()){
 			EventBean eventBean = currentVersionIterator.next();
 			String address = (String)eventBean.get(IpStatusChangedEvent.ADDRESS_PROP_NAME);
-			Boolean usedUnusually = (Boolean)eventBean.get(IpStatusChangedEvent.USEDUNUSUALLY_PROP_NAME);
+			Boolean usedUnusually = (Boolean)eventBean.get(IpStatusChangedEvent.USEDANOMALOUSLY_PROP_NAME);
 			
 			return new IpStatusChangedEvent(address, usedUnusually);
 		}

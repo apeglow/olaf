@@ -9,14 +9,15 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 
+import de.mobile.olaf.server.communication.out.PartnersNotificationService;
 import de.mobile.olaf.server.domain.IpUsageEventType;
-import de.mobile.olaf.server.domain.Site;
-import de.mobile.olaf.server.esper.IpAddressRatedAsUnsuallyUsedEventListener;
+import de.mobile.olaf.server.domain.PartnerSite;
+import de.mobile.olaf.server.esper.IpAddressRatedAsAnomalouslyUsedEventListener;
 import de.mobile.olaf.server.esper.IpAddressUsageEventUpdateListener;
 import de.mobile.olaf.server.esper.event.IpUsedEvent;
 
 /**
- * Application interface.
+ * This service is used to notify the system about an event happening on a parnter platform.
  * 
  * @author andre
  *
@@ -28,24 +29,11 @@ public class IpAddressUsageNotificationService {
 	/**
 	 * Constructor.
 	 * 
-	 * 
+	 * @param epServiceProvider
 	 */
-	public IpAddressUsageNotificationService(){
-		epServiceProvider = EPServiceProviderManager.getDefaultProvider();
-		
-		/*
-		 * Listen to ip usage events
-		 */
-		EPStatement unusalUsageEventStatement = epServiceProvider.getEPAdministrator().createEPL(IpAddressUsageEventUpdateListener.QUERY);
-		IpAddressUsageEventUpdateListener unusalUsageStatusSettingEventUpdateListener = new IpAddressUsageEventUpdateListener(epServiceProvider);
-		unusalUsageEventStatement.addListener(unusalUsageStatusSettingEventUpdateListener);
-		
-		/*
-		 * Listen to ip address usage status change events
-		 */
-		EPStatement ipAddressUsedUnusallyStatement = epServiceProvider.getEPAdministrator().createEPL(IpAddressRatedAsUnsuallyUsedEventListener.QUERY);
-		IpAddressRatedAsUnsuallyUsedEventListener ipAddressRatedAsUnsuallyUsedEventListener = new IpAddressRatedAsUnsuallyUsedEventListener();
-		ipAddressUsedUnusallyStatement.addListener(ipAddressRatedAsUnsuallyUsedEventListener);
+	public IpAddressUsageNotificationService(EPServiceProvider epServiceProvider){
+		this.epServiceProvider =epServiceProvider;
+
 	}
 	
 	/**
@@ -55,7 +43,7 @@ public class IpAddressUsageNotificationService {
 	 * @param site
 	 * @param eventType
 	 */
-	public void notify(InetAddress ipAddress, Site site, IpUsageEventType eventType){
+	public void notify(InetAddress ipAddress, PartnerSite site, IpUsageEventType eventType){
 		if (logger.isInfoEnabled()){
 			logger.info("Received "+eventType+" notification for ip-address "+ipAddress+" on site "+site+".");
 		}

@@ -1,7 +1,7 @@
 package de.mobile.olaf.server.esper.event;
 
 import de.mobile.olaf.server.domain.IpUsageEventType;
-import de.mobile.olaf.server.domain.Site;
+import de.mobile.olaf.server.domain.PartnerSite;
 
 
 public class IpUsedEvent {
@@ -10,9 +10,9 @@ public class IpUsedEvent {
 	
 	private final String ip;
 	private final String type;
-	private final Site site;
+	private final PartnerSite site;
 	
-	public IpUsedEvent(String ip, IpUsageEventType type, Site site){
+	public IpUsedEvent(String ip, IpUsageEventType type, PartnerSite site){
 		this.ip = ip;
 		this.type = type.name();
 		this.site = site;
@@ -22,7 +22,7 @@ public class IpUsedEvent {
 		return ip;
 	}
 	
-	public Site getSite() {
+	public PartnerSite getSite() {
 		return site;
 	}
 	

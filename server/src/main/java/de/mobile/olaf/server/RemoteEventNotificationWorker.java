@@ -10,15 +10,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import de.mobile.olaf.server.domain.IpUsageEventType;
-import de.mobile.olaf.server.domain.Site;
+import de.mobile.olaf.server.domain.PartnerSite;
 
 /**
- * Works the notification asynchronously.
+ * Works the notifications coming from the partner platforms 
+ * asynchronously.
  * 
  * @author andre
  *
  */
-public class NotificationWorker implements Runnable {
+public class RemoteEventNotificationWorker implements Runnable {
 	private final Random siteDie = new Random();
 	
 	
@@ -26,7 +27,7 @@ public class NotificationWorker implements Runnable {
 	private final DatagramPacket datagramPacket;
 	private final IpAddressUsageNotificationService ipAddressUsageNotificationService;
 	
-	public NotificationWorker(DatagramPacket datagramPacket, IpAddressUsageNotificationService ipAddressUsageNotificationService){
+	public RemoteEventNotificationWorker(DatagramPacket datagramPacket, IpAddressUsageNotificationService ipAddressUsageNotificationService){
 		this.datagramPacket = datagramPacket;
 		this.ipAddressUsageNotificationService = ipAddressUsageNotificationService;
 	}
@@ -36,7 +37,7 @@ public class NotificationWorker implements Runnable {
 		InetAddress address = datagramPacket.getAddress();
 //		Site site = Olaf.ipAddress2SiteMap.get(address.getHostAddress());
 		
-		Site site = Olaf.ipAddress2SiteMap.get(siteDie.nextInt(Olaf.ipAddress2SiteMap.size()));
+		PartnerSite site = Olaf.ipAddress2SiteMap.get(siteDie.nextInt(Olaf.ipAddress2SiteMap.size()));
 		
 		if (site != null){
 			byte[] data = datagramPacket.getData();

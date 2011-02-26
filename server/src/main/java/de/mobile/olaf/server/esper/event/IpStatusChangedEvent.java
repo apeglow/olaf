@@ -11,22 +11,26 @@ import java.net.InetAddress;
 public class IpStatusChangedEvent {
 	
 	public final static String ADDRESS_PROP_NAME = "address";
-	public final static String USEDUNUSUALLY_PROP_NAME = "usedUnusually";
+	public final static String USEDANOMALOUSLY_PROP_NAME = "usedAnomalously";
 	
 	
 	private final String address;
-	private final boolean usedUnusually;
+	private final boolean isUsedAnomalously;
+	private final boolean isUsedForSpam;
+	private final boolean isUsedForFraud;
 	
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param address
-	 * @param usedUnusually
+	 * @param isUsedAnomalously
 	 */
-	public IpStatusChangedEvent(String address, boolean usedUnusually){
+	public IpStatusChangedEvent(String address, boolean isUsedAnomalously){
 		this.address = address;
-		this.usedUnusually = usedUnusually;
+		this.isUsedAnomalously = isUsedAnomalously;
+		this.isUsedForSpam = false;
+		this.isUsedForFraud = false;
 		
 	}
 	
@@ -43,8 +47,16 @@ public class IpStatusChangedEvent {
 	 * Whether this address is known for unusual usage.
 	 * @return
 	 */
-	public boolean isUsedUnusually() {
-		return usedUnusually;
+	public boolean isUsedAnomalously() {
+		return isUsedAnomalously;
+	}
+
+	public boolean isUsedForSpam() {
+		return isUsedForSpam;
+	}
+
+	public boolean isUsedForFraud() {
+		return isUsedForFraud;
 	}
 	
 

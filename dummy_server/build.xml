@@ -1,0 +1,35 @@
+<project name="dummy_server">
+	<property name="src.dir"     value="src/main/java" />
+	<property name="resources.dir" value="src/main/resources" />
+	<property name="build.dir"   value="build" />
+	<property name="classes.dir" value="${build.dir}/classes"/>
+	<property name="lib.dir"     value="lib"/>
+	<property name="package.file" value="${build.dir}/olaf_rest_service.war" />
+
+    <path id="classpath">
+        <fileset dir="lib" includes="**/*.jar"/>
+    </path>
+
+
+
+    <target name="clean">
+    	<delete dir="${build.dir}"/>
+    </target>
+                
+    <target name="compile" depends="clean">
+    	<mkdir dir="${classes.dir}"/>
+	<javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+    </target>
+    
+    <target name="package" depends="compile">       
+       <war   destfile="${package.file}"
+              webxml="${resources.dir}/webapp/WEB-INF/web.xml"
+              basedir="${build.dir}">
+              <lib dir="${lib.dir}" />
+              <classes dir="${classes.dir}" />
+       </war>
+    </target>
+     
+
+</project>
+                                                                                                                                
