@@ -10,8 +10,8 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.mobile.olaf.server.communication.out.rest.RestPartnerNotifierFactory;
 import de.mobile.olaf.server.communication.out.udp.UdpPartnerNotifierFactory;
@@ -49,7 +49,7 @@ public class PartnersNotificationService {
 	/** class members **/
 	
 	private final Map<PartnerNotifierFactoryFactory, ExecutorService> communicators;
-	private final Log logger = LogFactory.getLog(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	
 	/**

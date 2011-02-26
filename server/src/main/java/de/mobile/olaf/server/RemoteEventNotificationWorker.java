@@ -6,8 +6,8 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.mobile.olaf.server.domain.IpUsageEventType;
 import de.mobile.olaf.server.domain.PartnerSite;
@@ -23,7 +23,7 @@ public class RemoteEventNotificationWorker implements Runnable {
 	private final Random siteDie = new Random();
 	
 	
-	private final Log logger = LogFactory.getLog(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final DatagramPacket datagramPacket;
 	private final IpAddressUsageNotificationService ipAddressUsageNotificationService;
 	
@@ -69,5 +69,6 @@ public class RemoteEventNotificationWorker implements Runnable {
 		throw new CommunicationException("No mark found.");
 		
 	}
-
+	
+	
 }

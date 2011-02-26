@@ -13,6 +13,12 @@ import de.mobile.olaf.server.esper.event.IpStatusChangedEvent;
  */
 public interface PartnerNotifierFactoryFactory {
 	
+	/**
+	 * Create a new instance of a notifier.
+	 * 
+	 * @param events
+	 * @return
+	 */
 	public PartnerNotifier create(Map<IpStatusChangedEvent, IpPropertyType> events);
 
 }

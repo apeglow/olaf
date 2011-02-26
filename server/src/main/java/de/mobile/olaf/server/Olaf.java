@@ -11,16 +11,16 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 
 import de.mobile.olaf.server.communication.out.PartnersNotificationService;
-import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.Country;
+import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
 import de.mobile.olaf.server.domain.PartnerSiteType;
 import de.mobile.olaf.server.esper.IpAddressRatedAsAnomalouslyUsedEventListener;
@@ -48,7 +48,7 @@ public class Olaf {
 		}
 	}
 	
-	private final Log logger = LogFactory.getLog(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final IpAddressUsageNotificationService ipAddressUsageNotificationService;
 	private final PartnersNotificationService partnersNotificationService;
 	private final ExecutorService executorService = Executors.newCachedThreadPool();

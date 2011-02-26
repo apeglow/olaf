@@ -2,8 +2,8 @@ package de.mobile.olaf.server;
 
 import java.net.InetAddress;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.espertech.esper.client.EPServiceProvider;
 
@@ -12,13 +12,13 @@ import de.mobile.olaf.server.domain.PartnerSite;
 import de.mobile.olaf.server.esper.event.IpUsedEvent;
 
 /**
- * This service is used to notify the system about an event happening on a parnter platform.
+ * This service is used to notify the system about an event happening on a partner platform.
  * 
  * @author andre
  *
  */
 public class IpAddressUsageNotificationService {
-	private final Log logger = LogFactory.getLog(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final EPServiceProvider epServiceProvider;
 	
 	/**
@@ -39,8 +39,8 @@ public class IpAddressUsageNotificationService {
 	 * @param eventType
 	 */
 	public void notify(InetAddress ipAddress, PartnerSite site, IpUsageEventType eventType){
-		if (logger.isInfoEnabled()){
-			logger.info("Received "+eventType+" notification for ip-address "+ipAddress+" on site "+site+".");
+		if (logger.isDebugEnabled()){
+			logger.debug("Received "+eventType+" notification for ip-address "+ipAddress+" on site "+site+".");
 		}
 		
 		IpUsedEvent ipUsageEvent = new IpUsedEvent(ipAddress.getHostAddress(), eventType, site);

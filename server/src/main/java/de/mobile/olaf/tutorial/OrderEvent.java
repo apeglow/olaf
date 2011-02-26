@@ -1,5 +1,6 @@
 package de.mobile.olaf.tutorial;
 
+
 public class OrderEvent {
 	private String itemName;
     private double price;
@@ -16,6 +17,7 @@ public class OrderEvent {
     public double getPrice() {
         return price;
     }
+    
 
 
 }

@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
@@ -18,6 +16,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.template.soy.SoyFileSet;
 import com.google.template.soy.data.SoyMapData;
@@ -35,10 +35,10 @@ import de.mobile.olaf.server.esper.event.IpStatusChangedEvent;
  *
  */
 public class RestPartnerNotifier implements PartnerNotifier {
-	private final static Log logger = LogFactory.getLog(RestPartnerNotifier.class);
+	private final static Logger logger = LoggerFactory.getLogger(RestPartnerNotifier.class);
 	private final PartnerSite site;
 	private final HttpClient httpClient;
-	private final URL xmlTemplateUrl;
+	private final SoyTofu xmlSoyTofu;
 	private final Map<IpStatusChangedEvent, IpPropertyType> events;
 	
 	
@@ -54,7 +54,8 @@ public class RestPartnerNotifier implements PartnerNotifier {
 		this.events = events;
 		this.httpClient = httpClient;
 		this.site = site;
-		this.xmlTemplateUrl = xmlTemplateUrl;
+		SoyFileSet sfs = (new SoyFileSet.Builder()).add(xmlTemplateUrl).build();
+	    this.xmlSoyTofu = sfs.compileToJavaObj();
 		
 	}
 
@@ -95,9 +96,7 @@ public class RestPartnerNotifier implements PartnerNotifier {
 		    }
 		    
 		} catch (UnsupportedEncodingException e){
-			logger.error("could not send event", e);
-		} catch (RuntimeException e){
-			logger.error("error while sending event", e);
+			throw new RuntimeException(e);
 		} catch (IOException e){
 			logger.error("error while sending event", e);
 		}
@@ -105,9 +104,6 @@ public class RestPartnerNotifier implements PartnerNotifier {
 	}
 
 	private String generateXml() {
-		SoyFileSet sfs = (new SoyFileSet.Builder()).add(xmlTemplateUrl).build();
-	    SoyTofu tofu = sfs.compileToJavaObj();
-	    
 	    SoyMapData soyMapData = new SoyMapData();
 	    List<Map<String, String>> viewEvents = new ArrayList<Map<String,String>>();
 	    for (Entry<IpStatusChangedEvent, IpPropertyType> entry:events.entrySet()){
@@ -126,7 +122,7 @@ public class RestPartnerNotifier implements PartnerNotifier {
 	    
 	    soyMapData.put("events", viewEvents);
 
-	    String xml = tofu.render("de.mobile.olaf.api.rest.xml", soyMapData, null);
+	    String xml = xmlSoyTofu.render("de.mobile.olaf.api.rest.xml", soyMapData, null);
 	    
 	    return xml;
 	}
