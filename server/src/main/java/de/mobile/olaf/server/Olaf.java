@@ -18,6 +18,7 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 
+import de.mobile.olaf.server.communication.in.RemoteEventNotificationWorker;
 import de.mobile.olaf.server.communication.out.PartnersNotificationService;
 import de.mobile.olaf.server.domain.Country;
 import de.mobile.olaf.server.domain.PartnerNotifierType;

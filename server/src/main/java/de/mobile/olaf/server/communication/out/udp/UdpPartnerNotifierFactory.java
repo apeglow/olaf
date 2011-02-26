@@ -3,7 +3,7 @@ package de.mobile.olaf.server.communication.out.udp;
 import java.util.Map;
 
 import de.mobile.olaf.server.communication.out.PartnerNotifier;
-import de.mobile.olaf.server.communication.out.PartnerNotifierFactoryFactory;
+import de.mobile.olaf.server.communication.out.PartnerNotifierFactory;
 import de.mobile.olaf.server.domain.IpPropertyType;
 import de.mobile.olaf.server.domain.PartnerSite;
 import de.mobile.olaf.server.esper.event.IpStatusChangedEvent;
@@ -14,26 +14,20 @@ import de.mobile.olaf.server.esper.event.IpStatusChangedEvent;
  * @author andre
  *
  */
-public class UdpPartnerNotifierFactory implements PartnerNotifierFactoryFactory {
+public class UdpPartnerNotifierFactory implements PartnerNotifierFactory {
 	
-	private final PartnerSite site;
-	
-	/**
-	 * Constructor.
-	 * 
-	 * @param site
-	 */
-	public UdpPartnerNotifierFactory(PartnerSite site){
-		this.site = site;
-	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see de.mobile.olaf.server.communication.out.AnalysisResultCommunicatorFactory#create(java.util.Map)
-	 */
+
 	@Override
-	public PartnerNotifier create(Map<IpStatusChangedEvent, IpPropertyType> events) {
-		return new UdpPartnerNotifier(site);
+	public PartnerNotifier create(PartnerSite site, Object message) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Object createMessage(Map<IpStatusChangedEvent, IpPropertyType> events) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

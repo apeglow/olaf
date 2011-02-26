@@ -1,5 +1,6 @@
 package de.mobile.olaf.server.communication.out;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -14,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.mobile.olaf.server.communication.out.rest.RestPartnerNotifierFactory;
-import de.mobile.olaf.server.communication.out.udp.UdpPartnerNotifierFactory;
 import de.mobile.olaf.server.domain.IpPropertyType;
+import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
 import de.mobile.olaf.server.esper.event.IpStatusChangedEvent;
 
@@ -29,26 +30,19 @@ public class PartnersNotificationService {
 	
 	/** static stuff **/
 	
+	private final static Map<PartnerNotifierType, PartnerNotifierFactory> PARTNER_NOTIFIER_FACTORIES = new HashMap<PartnerNotifierType, PartnerNotifierFactory>();
+	static {
+		PARTNER_NOTIFIER_FACTORIES.put(PartnerNotifierType.REST, new RestPartnerNotifierFactory());
+	}
+	
 	/**
 	 * Number of maximal threads for communication of analysis results per site.
 	 */
 	private final static int THREADS_PER_SITE = 5;
 	
-	private static PartnerNotifierFactoryFactory createCommunicatorFactory(PartnerSite site){
-		switch (site.getAnalysisResultCommunicatorType()){
-		case UDP:
-			return new UdpPartnerNotifierFactory(site);
-		case REST:
-			return new RestPartnerNotifierFactory(site);
-		}
-		
-		throw new UnsupportedOperationException();
-	}
-	
-	
 	/** class members **/
 	
-	private final Map<PartnerNotifierFactoryFactory, ExecutorService> communicators;
+	private final Map<PartnerSite, ExecutorService> partnerNotifiers;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	
@@ -58,13 +52,12 @@ public class PartnersNotificationService {
 	 * @param sites
 	 */
 	public PartnersNotificationService(Set<PartnerSite> sites){
-		communicators = new ConcurrentHashMap<PartnerNotifierFactoryFactory, ExecutorService>();
+		partnerNotifiers = new ConcurrentHashMap<PartnerSite, ExecutorService>();
 		
 		for (PartnerSite site:sites){
-			PartnerNotifierFactoryFactory communicatorFactory = createCommunicatorFactory(site);
 			ExecutorService executorService = new ThreadPoolExecutor(1, THREADS_PER_SITE, 50000L,   TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(1));
 		
-			communicators.put(communicatorFactory, executorService);
+			partnerNotifiers.put(site, executorService);
 		}
 	}
 	
@@ -79,15 +72,34 @@ public class PartnersNotificationService {
 		if (logger.isDebugEnabled()){
 			logger.debug("ip status changed. informing partners.");
 		}
-		for (Entry<PartnerNotifierFactoryFactory, ExecutorService> entry:communicators.entrySet()){
-			PartnerNotifierFactoryFactory analysisResultCommunicatorFactory = entry.getKey();
+		
+		/*
+		 * compute the message for every notifier type
+		 */
+		Map<PartnerNotifierType, Object> messages = new HashMap<PartnerNotifierType, Object>();
+		for (Entry<PartnerNotifierType, PartnerNotifierFactory> entry : PARTNER_NOTIFIER_FACTORIES.entrySet()){
+			PartnerNotifierType partnerNotifierType = entry.getKey();
+			PartnerNotifierFactory partnerNotifierFactory = entry.getValue();
+			
+			Object message = partnerNotifierFactory.createMessage(events);
+			messages.put(partnerNotifierType, message);
+		}
+		
+		/*
+		 * distribute the message to the partners
+		 */
+		for (Entry<PartnerSite, ExecutorService> entry:partnerNotifiers.entrySet()){
+			PartnerSite site = entry.getKey();
 			ExecutorService executorService = entry.getValue();
 			
-			PartnerNotifier communicator = analysisResultCommunicatorFactory.create(events);
+			PartnerNotifierType partnerNotifierType = site.getPartnerNotifierType();
+			PartnerNotifierFactory partnerNotifierFactory = PARTNER_NOTIFIER_FACTORIES.get(partnerNotifierType);
+			Object message = messages.get(partnerNotifierType);
+			PartnerNotifier partnerNotifier = partnerNotifierFactory.create(site, message);
 			try {
-				executorService.execute(communicator);
+				executorService.execute(partnerNotifier);
 			} catch (RejectedExecutionException e){
-				logger.warn("Could not send ip-address-status-change to \""+communicator.getSite()+"\". Communicators pool is full.");
+				logger.warn("Could not send ip-address-status-change to \""+partnerNotifier.getSite()+"\". Communicators pool is full.");
 			}
 		}
 
@@ -98,7 +110,7 @@ public class PartnersNotificationService {
 	 * After having called this method this instance cannot be used any longer.
 	 */
 	public void shutdown(){
-		for (ExecutorService service : communicators.values()){
+		for (ExecutorService service : partnerNotifiers.values()){
 			service.shutdown();
 		}
 	}

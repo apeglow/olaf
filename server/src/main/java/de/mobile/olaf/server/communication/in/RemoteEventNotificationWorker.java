@@ -1,4 +1,4 @@
-package de.mobile.olaf.server;
+package de.mobile.olaf.server.communication.in;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -9,6 +9,9 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.mobile.olaf.server.CommunicationException;
+import de.mobile.olaf.server.IpAddressUsageNotificationService;
+import de.mobile.olaf.server.Olaf;
 import de.mobile.olaf.server.domain.IpUsageEventType;
 import de.mobile.olaf.server.domain.PartnerSite;
 

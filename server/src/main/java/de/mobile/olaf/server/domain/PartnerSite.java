@@ -48,7 +48,7 @@ public class PartnerSite {
 		return type;
 	}
 	
-	public PartnerNotifierType getAnalysisResultCommunicatorType() {
+	public PartnerNotifierType getPartnerNotifierType() {
 		return analysisResultCommunicatorType;
 	}
 	
