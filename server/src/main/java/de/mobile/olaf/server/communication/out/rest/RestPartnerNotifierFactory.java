@@ -3,8 +3,10 @@ package de.mobile.olaf.server.communication.out.rest;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.http.client.HttpClient;
@@ -22,6 +24,7 @@ import com.google.template.soy.tofu.SoyTofu;
 import de.mobile.olaf.server.communication.out.PartnerNotifier;
 import de.mobile.olaf.server.communication.out.PartnerNotifierFactory;
 import de.mobile.olaf.server.domain.IpPropertyType;
+import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
 import de.mobile.olaf.server.esper.event.IpStatusChangedEvent;
 
@@ -55,23 +58,35 @@ public class RestPartnerNotifierFactory implements PartnerNotifierFactory {
 		SoyFileSet sfs = (new SoyFileSet.Builder()).add(xmlTemplateUrl).build();
 	    this.xmlSoyTofu = sfs.compileToJavaObj();
 	}
-
+	
 	/*
 	 * (non-Javadoc)
-	 * @see de.mobile.olaf.server.communication.out.PartnerNotifierFactory#create(de.mobile.olaf.server.domain.PartnerSite, java.lang.Object)
+	 * @see de.mobile.olaf.server.communication.out.PartnerNotifierFactory#create(java.util.Set, java.util.Map)
 	 */
 	@Override
-	public PartnerNotifier create(PartnerSite site, Object message) {
-		String xml = (String)message;
-		return new RestPartnerNotifier(xml, site, httpClient);
+	public Set<PartnerNotifier> create(Set<PartnerSite> sites, Map<IpStatusChangedEvent, IpPropertyType> events) {
+		String xml = createMessage(events);
+		Set<PartnerNotifier> notifiers = new HashSet<PartnerNotifier>();
+		for (PartnerSite site : sites){
+			if (site.getPartnerNotifierType() == PartnerNotifierType.REST){
+				notifiers.add(new RestPartnerNotifier(xml, site, httpClient));
+			}
+		}
+		
+		return notifiers;
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see de.mobile.olaf.server.communication.out.PartnerNotifierFactory#createMessage(java.util.Map)
+	 * @see de.mobile.olaf.server.communication.out.PartnerNotifierFactory#getType()
 	 */
 	@Override
-	public Object createMessage(Map<IpStatusChangedEvent, IpPropertyType> events) {
+	public PartnerNotifierType getType() {
+		return PartnerNotifierType.REST;
+	}
+
+	
+	private String createMessage(Map<IpStatusChangedEvent, IpPropertyType> events) {
 		SoyMapData soyMapData = new SoyMapData();
 	    List<Map<String, String>> viewEvents = new ArrayList<Map<String,String>>();
 	    for (Entry<IpStatusChangedEvent, IpPropertyType> entry:events.entrySet()){

@@ -16,7 +16,7 @@ public class PartnerSite {
 	private final String name;
 	private final Country country;
 	private final PartnerSiteType type;
-	private final PartnerNotifierType analysisResultCommunicatorType;
+	private final PartnerNotifierType partnerNotifierType;
 	private final URI analysisResultReceivingServiceUri;
 	
 	/**
@@ -25,14 +25,14 @@ public class PartnerSite {
 	 * @param name
 	 * @param country
 	 * @param type
-	 * @param analysisResultCommunicatorType
+	 * @param partnerNotifierType
 	 * @param analysisResultReceivingServiceUri
 	 */
-	public PartnerSite(String name, Country country, PartnerSiteType type, PartnerNotifierType analysisResultCommunicatorType, URI analysisResultReceivingServiceUri){
+	public PartnerSite(String name, Country country, PartnerSiteType type, PartnerNotifierType partnerNotifierType, URI analysisResultReceivingServiceUri){
 		this.name = name;
 		this.country = country;
 		this.type = type;
-		this.analysisResultCommunicatorType = analysisResultCommunicatorType;
+		this.partnerNotifierType = partnerNotifierType;
 		this.analysisResultReceivingServiceUri = analysisResultReceivingServiceUri;
 	}
 	
@@ -49,7 +49,7 @@ public class PartnerSite {
 	}
 	
 	public PartnerNotifierType getPartnerNotifierType() {
-		return analysisResultCommunicatorType;
+		return partnerNotifierType;
 	}
 	
 	public URI getAnalysisResultReceivingServiceUri() {
