@@ -71,10 +71,8 @@ public class RestPartnerNotifier implements PartnerNotifier {
 		    
 		    if (status != HttpStatus.SC_OK){
 		    	logger.warn("Could not sent event to "+site.getName()+". Server returned "+status+".");
-		    } else {
-		    	if (logger.isDebugEnabled()){
-		    		logger.debug("Event sent to "+site+".");
-		    	}
+		    } else if (logger.isDebugEnabled()){
+		    	logger.debug("Event sent to "+site+".");
 		    }
 		    
 		} catch (UnsupportedEncodingException e){

@@ -91,6 +91,13 @@ public class Olaf {
 	 * @throws IOException
 	 */
 	public void start() throws IOException {
+		/*
+		 * This is subject to change. The communication interface is about
+		 * to be designed and implemented by Alex.
+		 * 
+		 * This here is only temporarily.
+		 */
+		
 		
 		DatagramSocket socket = new DatagramSocket(5555);
 		

@@ -21,7 +21,10 @@ import de.mobile.olaf.server.domain.PartnerSite;
  * 
  * @author andre
  *
+ * This is only temporarily. The communication interface is to be designed
+ * by Alex.
  */
+@Deprecated
 public class RemoteEventNotificationWorker implements Runnable {
 	private final Random siteDie = new Random();
 	
@@ -38,8 +41,6 @@ public class RemoteEventNotificationWorker implements Runnable {
 	@Override
 	public void run() {
 		InetAddress address = datagramPacket.getAddress();
-//		Site site = Olaf.ipAddress2SiteMap.get(address.getHostAddress());
-		
 		PartnerSite site = Olaf.ipAddress2SiteMap.get(siteDie.nextInt(Olaf.ipAddress2SiteMap.size()));
 		
 		if (site != null){
