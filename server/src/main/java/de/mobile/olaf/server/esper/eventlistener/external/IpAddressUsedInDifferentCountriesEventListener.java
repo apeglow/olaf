@@ -17,13 +17,13 @@ import de.mobile.olaf.server.esper.event.IpUsedEvent;
  * @author andre
  *
  */
-public class IpAddressUsageEventUpdateListener implements UpdateListener {
+public class IpAddressUsedInDifferentCountriesEventListener implements UpdateListener {
 	
-	public final static String QUERY = "select "+IpUsedEvent.IP_PROP_NAME+", count(distinct(site)) as nr from "+IpUsedEvent.class.getName()+".win:time(360 min) where type='"+IpUsedEventType.USE+"'";
+	public final static String QUERY = "select "+IpUsedEvent.IP_PROP_NAME+", count(distinct(site.country)) as nr from "+IpUsedEvent.class.getName()+".win:time(360 min) where type='"+IpUsedEventType.USE+"'";
 	
 	private final EPServiceProvider epServiceProvider;
 	
-	public IpAddressUsageEventUpdateListener(EPServiceProvider epServiceProvider){
+	public IpAddressUsedInDifferentCountriesEventListener(EPServiceProvider epServiceProvider){
 		epServiceProvider.getEPAdministrator().createEPL("create window IpAddressWindow.win:time(360 min) as select * from "+IpStatus.class.getName());
 		epServiceProvider.getEPAdministrator().createEPL("insert into IpAddressWindow select * from "+IpStatus.class.getName());
 		this.epServiceProvider = epServiceProvider;

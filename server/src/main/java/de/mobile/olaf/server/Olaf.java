@@ -24,7 +24,7 @@ import de.mobile.olaf.server.domain.Country;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
 import de.mobile.olaf.server.domain.PartnerSiteType;
-import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsageEventUpdateListener;
+import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedInDifferentCountriesEventListener;
 import de.mobile.olaf.server.esper.eventlistener.internal.IpAddressRatedAsAnomalouslyUsedEventListener;
 
 /**
@@ -73,8 +73,8 @@ public class Olaf {
 		/*
 		 * Listen to ip usage events
 		 */
-		EPStatement unusalUsageEventStatement = epServiceProvider.getEPAdministrator().createEPL(IpAddressUsageEventUpdateListener.QUERY);
-		IpAddressUsageEventUpdateListener unusalUsageStatusSettingEventUpdateListener = new IpAddressUsageEventUpdateListener(epServiceProvider);
+		EPStatement unusalUsageEventStatement = epServiceProvider.getEPAdministrator().createEPL(IpAddressUsedInDifferentCountriesEventListener.QUERY);
+		IpAddressUsedInDifferentCountriesEventListener unusalUsageStatusSettingEventUpdateListener = new IpAddressUsedInDifferentCountriesEventListener(epServiceProvider);
 		unusalUsageEventStatement.addListener(unusalUsageStatusSettingEventUpdateListener);
 		
 		/*
