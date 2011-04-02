@@ -6,9 +6,9 @@ import java.util.Set;
 import de.mobile.olaf.server.communication.out.PartnerNotifier;
 import de.mobile.olaf.server.communication.out.PartnerNotifierFactory;
 import de.mobile.olaf.server.domain.IpPropertyType;
+import de.mobile.olaf.server.domain.IpStatus;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
-import de.mobile.olaf.server.esper.event.IpStatus;
 
 /**
  * Communicates by using udp packages.

@@ -8,7 +8,7 @@ import com.espertech.esper.client.UpdateListener;
 
 import de.mobile.olaf.server.communication.out.PartnersNotificationService;
 import de.mobile.olaf.server.domain.IpPropertyType;
-import de.mobile.olaf.server.esper.event.IpStatus;
+import de.mobile.olaf.server.domain.IpStatus;
 
 /**
  * Listens to the event "ip address rated as anomalously used" and calls the partners notification service.

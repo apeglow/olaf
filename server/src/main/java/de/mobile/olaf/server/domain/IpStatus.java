@@ -1,4 +1,4 @@
-package de.mobile.olaf.server.esper.event;
+package de.mobile.olaf.server.domain;
 
 import java.net.InetAddress;
 

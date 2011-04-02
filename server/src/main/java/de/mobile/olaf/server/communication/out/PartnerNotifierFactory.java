@@ -4,9 +4,9 @@ import java.util.Map;
 import java.util.Set;
 
 import de.mobile.olaf.server.domain.IpPropertyType;
+import de.mobile.olaf.server.domain.IpStatus;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
-import de.mobile.olaf.server.esper.event.IpStatus;
 
 /**
  * Creates instances of type {@link PartnerNotifier}.

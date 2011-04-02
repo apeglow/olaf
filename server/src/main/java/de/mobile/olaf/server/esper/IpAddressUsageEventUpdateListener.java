@@ -7,19 +7,19 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.UpdateListener;
 
-import de.mobile.olaf.server.domain.IpUsageEventType;
-import de.mobile.olaf.server.esper.event.IpStatus;
+import de.mobile.olaf.api.IpUsedEventType;
+import de.mobile.olaf.server.domain.IpStatus;
 import de.mobile.olaf.server.esper.event.IpUsedEvent;
 
 /**
- * Listens to {@link IpUsageEventType#USE} and updates the {@link IpStatus} if required.
+ * Listens to {@link IpUsedEventType#USE} and updates the {@link IpStatus} if required.
  * 
  * @author andre
  *
  */
 public class IpAddressUsageEventUpdateListener implements UpdateListener {
 	
-	public final static String QUERY = "select "+IpUsedEvent.IP_PROP_NAME+", count(distinct(site)) as nr from "+IpUsedEvent.class.getName()+".win:time(360 min) where type='"+IpUsageEventType.USE+"'";
+	public final static String QUERY = "select "+IpUsedEvent.IP_PROP_NAME+", count(distinct(site)) as nr from "+IpUsedEvent.class.getName()+".win:time(360 min) where type='"+IpUsedEventType.USE+"'";
 	
 	private final EPServiceProvider epServiceProvider;
 	

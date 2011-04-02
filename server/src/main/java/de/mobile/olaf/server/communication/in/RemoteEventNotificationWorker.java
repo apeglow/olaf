@@ -9,10 +9,10 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.mobile.olaf.api.IpUsedEventType;
 import de.mobile.olaf.server.CommunicationException;
 import de.mobile.olaf.server.IpAddressUsageNotificationService;
 import de.mobile.olaf.server.Olaf;
-import de.mobile.olaf.server.domain.IpUsageEventType;
 import de.mobile.olaf.server.domain.PartnerSite;
 
 /**
@@ -50,7 +50,7 @@ public class RemoteEventNotificationWorker implements Runnable {
 				int mark = findMark(data);
 				InetAddress usedAddress = InetAddress.getByAddress(Arrays.copyOf(data, mark));
 				String strEventType = new String(Arrays.copyOfRange(data, mark+1, data.length)).trim();
-				IpUsageEventType eventType = IpUsageEventType.valueOf(strEventType);
+				IpUsedEventType eventType = IpUsedEventType.valueOf(strEventType);
 				ipAddressUsageNotificationService.notify(usedAddress, site, eventType);
 				
 			} catch (CommunicationException e){

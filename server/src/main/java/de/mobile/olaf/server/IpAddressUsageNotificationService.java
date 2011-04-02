@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.espertech.esper.client.EPServiceProvider;
 
-import de.mobile.olaf.server.domain.IpUsageEventType;
+import de.mobile.olaf.api.IpUsedEventType;
 import de.mobile.olaf.server.domain.PartnerSite;
 import de.mobile.olaf.server.esper.event.IpUsedEvent;
 
@@ -38,7 +38,7 @@ public class IpAddressUsageNotificationService {
 	 * @param site
 	 * @param eventType
 	 */
-	public void notify(InetAddress ipAddress, PartnerSite site, IpUsageEventType eventType){
+	public void notify(InetAddress ipAddress, PartnerSite site, IpUsedEventType eventType){
 		if (logger.isDebugEnabled()){
 			logger.debug("Received "+eventType+" notification for ip-address "+ipAddress+" on site "+site+".");
 		}

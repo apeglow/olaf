@@ -1,4 +1,4 @@
-package de.mobile.olaf.server.domain;
+package de.mobile.olaf.api;
 
 /**
  * Defines the type of usage of an ip-address.
@@ -6,12 +6,22 @@ package de.mobile.olaf.server.domain;
  * @author andre
  *
  */
-public enum IpUsageEventType {
+public enum IpUsedEventType {
 	
 	/**
-	 * The ip-adress was just used.
+	 * The ip-address was just used.
 	 */
 	USE,
+	
+	/**
+	 * ip address used for contacting a seller
+	 */
+	CONTACT,
+	
+	/**
+	 * ip address used for posting or modifying an ad
+	 */
+	POST,
 	
 	/**
 	 * Spam has been sent from this ip address.

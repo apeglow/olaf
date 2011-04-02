@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import de.mobile.olaf.server.communication.out.rest.RestPartnerNotifierFactory;
 import de.mobile.olaf.server.domain.IpPropertyType;
+import de.mobile.olaf.server.domain.IpStatus;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
-import de.mobile.olaf.server.esper.event.IpStatus;
 
 /**
  * This service notifies the partners about status changes of ip addresses.
