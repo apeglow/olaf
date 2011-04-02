@@ -1,4 +1,4 @@
-package de.mobile.olaf.server.esper;
+package de.mobile.olaf.server.esper.eventlistener.external;
 
 import java.util.Iterator;
 
@@ -43,10 +43,12 @@ public class IpAddressUsageEventUpdateListener implements UpdateListener {
 				String query = "select * from IpAddressWindow where address='"+ip+"'";
 				EPOnDemandQueryResult result = epServiceProvider.getEPRuntime().executeQuery(query);
 				
-				IpStatus ipStatusChangeEvent = convertToIpStatusChangeEvent(result);
-				if (ipStatusChangeEvent == null || !ipStatusChangeEvent.isUsedAnomalously()){
-					ipStatusChangeEvent = new IpStatus(ip, true);
-					epServiceProvider.getEPRuntime().sendEvent(ipStatusChangeEvent);
+				IpStatus ipStatus = getCurrentIpStatus(result);
+				if (ipStatus == null || !ipStatus.isUsedAnomalously()){
+					ipStatus = new IpStatus(ip, true);
+					
+					// store new ip status
+					epServiceProvider.getEPRuntime().sendEvent(ipStatus);
 				} 
 			}
 		}
@@ -58,10 +60,10 @@ public class IpAddressUsageEventUpdateListener implements UpdateListener {
 	 * @param currentVersion
 	 * @return
 	 */
-	private IpStatus convertToIpStatusChangeEvent(EPOnDemandQueryResult currentVersion) {
-		Iterator<EventBean> currentVersionIterator = currentVersion.iterator();
-		if (currentVersionIterator.hasNext()){
-			EventBean eventBean = currentVersionIterator.next();
+	private IpStatus getCurrentIpStatus(EPOnDemandQueryResult ipAddressResult) {
+		Iterator<EventBean> ipAddressResultIterator = ipAddressResult.iterator();
+		if (ipAddressResultIterator.hasNext()){
+			EventBean eventBean = ipAddressResultIterator.next();
 			String address = (String)eventBean.get(IpStatus.ADDRESS_PROP_NAME);
 			Boolean usedUnusually = (Boolean)eventBean.get(IpStatus.USEDANOMALOUSLY_PROP_NAME);
 			

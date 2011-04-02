@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -23,7 +22,6 @@ import com.google.template.soy.tofu.SoyTofu;
 
 import de.mobile.olaf.server.communication.out.PartnerNotifier;
 import de.mobile.olaf.server.communication.out.PartnerNotifierFactory;
-import de.mobile.olaf.server.domain.IpPropertyType;
 import de.mobile.olaf.server.domain.IpStatus;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
@@ -64,8 +62,8 @@ public class RestPartnerNotifierFactory implements PartnerNotifierFactory {
 	 * @see de.mobile.olaf.server.communication.out.PartnerNotifierFactory#create(java.util.Set, java.util.Map)
 	 */
 	@Override
-	public Set<PartnerNotifier> create(Set<PartnerSite> sites, Map<IpStatus, IpPropertyType> events) {
-		String xml = createMessage(events);
+	public Set<PartnerNotifier> create(Set<PartnerSite> sites, Set<IpStatus> changedStatuses) {
+		String xml = createMessage(changedStatuses);
 		Set<PartnerNotifier> notifiers = new HashSet<PartnerNotifier>();
 		for (PartnerSite site : sites){
 			if (site.getPartnerNotifierType() == PartnerNotifierType.REST){
@@ -86,19 +84,16 @@ public class RestPartnerNotifierFactory implements PartnerNotifierFactory {
 	}
 
 	
-	private String createMessage(Map<IpStatus, IpPropertyType> events) {
+	private String createMessage(Set<IpStatus> changedIpStatuses) {
 		SoyMapData soyMapData = new SoyMapData();
 	    List<Map<String, String>> viewEvents = new ArrayList<Map<String,String>>();
-	    for (Entry<IpStatus, IpPropertyType> entry:events.entrySet()){
-	    	IpStatus event = entry.getKey();
-	    	IpPropertyType newProperty = entry.getValue();
+	    for (IpStatus ipStatus : changedIpStatuses){
 	    	
 	    	Map<String, String> viewEvent = new HashMap<String, String>();
-	    	viewEvent.put("address", event.getAddress());
-	    	viewEvent.put("spam", Boolean.toString(event.isUsedForSpam()));
-	    	viewEvent.put("fraud", Boolean.toString(event.isUsedForFraud()));
-	    	viewEvent.put("anomalously", Boolean.toString(event.isUsedAnomalously()));
-	    	viewEvent.put("newProperty", newProperty.name());
+	    	viewEvent.put("address", ipStatus.getAddress());
+	    	viewEvent.put("spam", Boolean.toString(ipStatus.isUsedForSpam()));
+	    	viewEvent.put("fraud", Boolean.toString(ipStatus.isUsedForFraud()));
+	    	viewEvent.put("anomalously", Boolean.toString(ipStatus.isUsedAnomalously()));
 	    	
 	    	viewEvents.add(viewEvent);
 	    }

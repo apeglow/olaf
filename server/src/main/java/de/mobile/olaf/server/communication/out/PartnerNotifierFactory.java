@@ -1,9 +1,7 @@
 package de.mobile.olaf.server.communication.out;
 
-import java.util.Map;
 import java.util.Set;
 
-import de.mobile.olaf.server.domain.IpPropertyType;
 import de.mobile.olaf.server.domain.IpStatus;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
@@ -20,10 +18,10 @@ public interface PartnerNotifierFactory {
 	 * Create new notifiers for the sites of the managed type. 
 	 * 
 	 * @param sites 
-	 * @param events
+	 * @param changedStatuses
 	 * @return
 	 */
-	public Set<PartnerNotifier> create(Set<PartnerSite> sites, Map<IpStatus, IpPropertyType> events);
+	public Set<PartnerNotifier> create(Set<PartnerSite> sites, Set<IpStatus> changedStatuses);
 
 	/**
 	 * Get the type.

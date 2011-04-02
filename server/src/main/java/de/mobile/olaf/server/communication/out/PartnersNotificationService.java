@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.mobile.olaf.server.communication.out.rest.RestPartnerNotifierFactory;
-import de.mobile.olaf.server.domain.IpPropertyType;
 import de.mobile.olaf.server.domain.IpStatus;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
@@ -77,7 +76,7 @@ public class PartnersNotificationService {
 	 * @param events
 	 * 
 	 */
-	public void ipStatusChanged(Map<IpStatus, IpPropertyType> events){
+	public void ipStatusChanged(Set<IpStatus> changedIpStatuses){
 		if (logger.isDebugEnabled()){
 			logger.debug("ip status changed. informing partners.");
 		}
@@ -85,7 +84,7 @@ public class PartnersNotificationService {
 		for (PartnerNotifierFactory partnerNotifierFactory : PARTNER_NOTIFIER_FACTORIES){
 			Map<PartnerSite, ExecutorService> partnersWithExecutors = partnerSites.get(partnerNotifierFactory.getType());
 			
-			Set<PartnerNotifier> partnerNotifiers = partnerNotifierFactory.create(partnersWithExecutors.keySet(), events);
+			Set<PartnerNotifier> partnerNotifiers = partnerNotifierFactory.create(partnersWithExecutors.keySet(), changedIpStatuses);
 			for (PartnerNotifier partnerNotifier : partnerNotifiers){
 				ExecutorService executorService = partnersWithExecutors.get(partnerNotifier.getSite());
 				try {

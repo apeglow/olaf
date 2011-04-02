@@ -24,8 +24,8 @@ import de.mobile.olaf.server.domain.Country;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
 import de.mobile.olaf.server.domain.PartnerSiteType;
-import de.mobile.olaf.server.esper.IpAddressRatedAsAnomalouslyUsedEventListener;
-import de.mobile.olaf.server.esper.IpAddressUsageEventUpdateListener;
+import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsageEventUpdateListener;
+import de.mobile.olaf.server.esper.eventlistener.internal.IpAddressRatedAsAnomalouslyUsedEventListener;
 
 /**
  * The OLAF application.
