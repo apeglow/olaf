@@ -17,7 +17,7 @@ import de.mobile.olaf.server.communication.out.rest.RestPartnerNotifierFactory;
 import de.mobile.olaf.server.domain.IpPropertyType;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
-import de.mobile.olaf.server.esper.event.IpStatusChangedEvent;
+import de.mobile.olaf.server.esper.event.IpStatus;
 
 /**
  * This service notifies the partners about status changes of ip addresses.
@@ -77,7 +77,7 @@ public class PartnersNotificationService {
 	 * @param events
 	 * 
 	 */
-	public void ipStatusChanged(Map<IpStatusChangedEvent, IpPropertyType> events){
+	public void ipStatusChanged(Map<IpStatus, IpPropertyType> events){
 		if (logger.isDebugEnabled()){
 			logger.debug("ip status changed. informing partners.");
 		}

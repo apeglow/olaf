@@ -8,7 +8,7 @@ import java.net.InetAddress;
  * @author andre
  *
  */
-public class IpStatusChangedEvent {
+public class IpStatus {
 	
 	public final static String ADDRESS_PROP_NAME = "address";
 	public final static String USEDANOMALOUSLY_PROP_NAME = "usedAnomalously";
@@ -26,7 +26,7 @@ public class IpStatusChangedEvent {
 	 * @param address
 	 * @param isUsedAnomalously
 	 */
-	public IpStatusChangedEvent(String address, boolean isUsedAnomalously){
+	public IpStatus(String address, boolean isUsedAnomalously){
 		this.address = address;
 		this.isUsedAnomalously = isUsedAnomalously;
 		this.isUsedForSpam = false;

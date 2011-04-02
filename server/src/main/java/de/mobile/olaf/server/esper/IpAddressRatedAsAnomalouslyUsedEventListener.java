@@ -8,7 +8,7 @@ import com.espertech.esper.client.UpdateListener;
 
 import de.mobile.olaf.server.communication.out.PartnersNotificationService;
 import de.mobile.olaf.server.domain.IpPropertyType;
-import de.mobile.olaf.server.esper.event.IpStatusChangedEvent;
+import de.mobile.olaf.server.esper.event.IpStatus;
 
 /**
  * Listens to the event "ip address rated as anomalously used" and calls the partners notification service.
@@ -18,7 +18,7 @@ import de.mobile.olaf.server.esper.event.IpStatusChangedEvent;
  */
 public class IpAddressRatedAsAnomalouslyUsedEventListener implements UpdateListener {
 	
-	public final static String QUERY = "select address from "+IpStatusChangedEvent.class.getName()+" where "+IpStatusChangedEvent.USEDANOMALOUSLY_PROP_NAME+"=true";
+	public final static String QUERY = "select address from "+IpStatus.class.getName()+" where "+IpStatus.USEDANOMALOUSLY_PROP_NAME+"=true";
 
 	private final PartnersNotificationService notificationService;
 	
@@ -28,11 +28,11 @@ public class IpAddressRatedAsAnomalouslyUsedEventListener implements UpdateListe
 	
 	@Override
 	public void update(EventBean[] newEvents, EventBean[] oldEvents) {
-		Map<IpStatusChangedEvent, IpPropertyType> events = new HashMap<IpStatusChangedEvent, IpPropertyType>();
+		Map<IpStatus, IpPropertyType> events = new HashMap<IpStatus, IpPropertyType>();
 		
 		for (EventBean eventBean : newEvents){
-			String address = (String)eventBean.get(IpStatusChangedEvent.ADDRESS_PROP_NAME);
-			IpStatusChangedEvent event = new IpStatusChangedEvent(address, true);
+			String address = (String)eventBean.get(IpStatus.ADDRESS_PROP_NAME);
+			IpStatus event = new IpStatus(address, true);
 			events.put(event, IpPropertyType.ANOMALOUS_BEHAVIOUR);
 		}
 		

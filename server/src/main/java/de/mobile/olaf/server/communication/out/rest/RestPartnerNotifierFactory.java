@@ -26,7 +26,7 @@ import de.mobile.olaf.server.communication.out.PartnerNotifierFactory;
 import de.mobile.olaf.server.domain.IpPropertyType;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
-import de.mobile.olaf.server.esper.event.IpStatusChangedEvent;
+import de.mobile.olaf.server.esper.event.IpStatus;
 
 /**
  * Creates instances of {@link RestPartnerNotifier}.
@@ -64,7 +64,7 @@ public class RestPartnerNotifierFactory implements PartnerNotifierFactory {
 	 * @see de.mobile.olaf.server.communication.out.PartnerNotifierFactory#create(java.util.Set, java.util.Map)
 	 */
 	@Override
-	public Set<PartnerNotifier> create(Set<PartnerSite> sites, Map<IpStatusChangedEvent, IpPropertyType> events) {
+	public Set<PartnerNotifier> create(Set<PartnerSite> sites, Map<IpStatus, IpPropertyType> events) {
 		String xml = createMessage(events);
 		Set<PartnerNotifier> notifiers = new HashSet<PartnerNotifier>();
 		for (PartnerSite site : sites){
@@ -86,11 +86,11 @@ public class RestPartnerNotifierFactory implements PartnerNotifierFactory {
 	}
 
 	
-	private String createMessage(Map<IpStatusChangedEvent, IpPropertyType> events) {
+	private String createMessage(Map<IpStatus, IpPropertyType> events) {
 		SoyMapData soyMapData = new SoyMapData();
 	    List<Map<String, String>> viewEvents = new ArrayList<Map<String,String>>();
-	    for (Entry<IpStatusChangedEvent, IpPropertyType> entry:events.entrySet()){
-	    	IpStatusChangedEvent event = entry.getKey();
+	    for (Entry<IpStatus, IpPropertyType> entry:events.entrySet()){
+	    	IpStatus event = entry.getKey();
 	    	IpPropertyType newProperty = entry.getValue();
 	    	
 	    	Map<String, String> viewEvent = new HashMap<String, String>();

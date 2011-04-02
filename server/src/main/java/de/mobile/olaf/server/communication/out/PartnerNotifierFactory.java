@@ -6,7 +6,7 @@ import java.util.Set;
 import de.mobile.olaf.server.domain.IpPropertyType;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
-import de.mobile.olaf.server.esper.event.IpStatusChangedEvent;
+import de.mobile.olaf.server.esper.event.IpStatus;
 
 /**
  * Creates instances of type {@link PartnerNotifier}.
@@ -23,7 +23,7 @@ public interface PartnerNotifierFactory {
 	 * @param events
 	 * @return
 	 */
-	public Set<PartnerNotifier> create(Set<PartnerSite> sites, Map<IpStatusChangedEvent, IpPropertyType> events);
+	public Set<PartnerNotifier> create(Set<PartnerSite> sites, Map<IpStatus, IpPropertyType> events);
 
 	/**
 	 * Get the type.
