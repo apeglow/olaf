@@ -10,6 +10,13 @@ import de.mobile.olaf.server.domain.RatedIpAddress;
 
 public class IpAddressUpdateUtil {
 	
+	/**
+	 * Updates the status respecting the relations between the status types.
+	 *  
+	 * @param ipAddress
+	 * @param status
+	 * @param epServiceProvider
+	 */
 	public static void update(String ipAddress, IpAddressStatus status, EPServiceProvider epServiceProvider){
 		String query = "select * from "+Olaf.RATED_IP_ADDRESS_WINDOW_NAME+" where address='"+ipAddress+"'";
 		EPOnDemandQueryResult result = epServiceProvider.getEPRuntime().executeQuery(query);
@@ -24,10 +31,16 @@ public class IpAddressUpdateUtil {
 			
 			for (EventBean ratedIpAddressEventBean: ratedIpAddressEventBeans){
 				RatedIpAddress ratedIpAddress = (RatedIpAddress)ratedIpAddressEventBean.getUnderlying();
-				if (ratedIpAddress.getStatus().compareTo(status)<0){
-					ratedIpAddress.setStatus(status);
-					// store new ip status
-					epServiceProvider.getEPRuntime().sendEvent(ratedIpAddress);
+				if (ratedIpAddress.getStatus() != status){
+					
+					/*
+					 * either the status gets 'up' or the new status is FRAUD 
+					 */
+					if (ratedIpAddress.getStatus().compareTo(status)<0 || status == IpAddressStatus.USED_FOR_FRAUD){
+						ratedIpAddress.setStatus(status);
+						// store new ip status
+						epServiceProvider.getEPRuntime().sendEvent(ratedIpAddress);
+					}
 				}
 			}
 		}

@@ -25,6 +25,9 @@ import de.mobile.olaf.server.domain.PartnerSite;
 import de.mobile.olaf.server.domain.PartnerSiteType;
 import de.mobile.olaf.server.domain.RatedIpAddress;
 import de.mobile.olaf.server.esper.eventlistener.external.IpAddressAnnouncedAsFraudEventListener;
+import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedForContactExcessivelyEventListener;
+import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedForContactInDifferentCountriesEventListener;
+import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedForPostingInDifferentCountriesEventListener;
 import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedInDifferentCountriesEventListener;
 import de.mobile.olaf.server.esper.eventlistener.internal.IpAddressRatedEventListener;
 
@@ -80,6 +83,11 @@ public class Olaf {
 		 */
 		IpAddressRatedEventListener.register(epServiceProvider, partnersNotificationService);
 		
+		
+		
+		
+		
+		
 		/*
 		 * Listen to ip usage in different countries events
 		 */
@@ -90,9 +98,20 @@ public class Olaf {
 		 */
 		IpAddressAnnouncedAsFraudEventListener.register(epServiceProvider);
 		
+		/*
+		 * Listen to contact events in different countries 
+		 */
+		IpAddressUsedForContactInDifferentCountriesEventListener.register(epServiceProvider);
 		
-		// used for contact
-		// used execessivly
+		/*
+		 *  used excessively
+		 */
+		IpAddressUsedForContactExcessivelyEventListener.register(epServiceProvider);
+		
+		/*
+		 * used for posting in different countries
+		 */
+		IpAddressUsedForPostingInDifferentCountriesEventListener.register(epServiceProvider);
 	}
 	
 	

@@ -9,29 +9,22 @@ import de.mobile.olaf.api.IpAddressStatus;
 import de.mobile.olaf.api.IpUsedEventType;
 import de.mobile.olaf.server.esper.event.IpUsedEvent;
 
-/**
- * Rates an ip address as {@link IpAddressStatus#USED_ANOMALOUSLY} if it is used in different countries within 6 hours.
- * 
- * @author andre
- *
- */
-public class IpAddressUsedInDifferentCountriesEventListener implements UpdateListener {
+public class IpAddressAnnouncedAsGoodEventListener implements UpdateListener {
 	
 	/**
-	 * Registers an instance at the service provider.
+	 * Register an instance at the service provider.
 	 * 
 	 * @param epServiceProvider
 	 */
 	public static void register(EPServiceProvider epServiceProvider){
-		String query = "select "+IpUsedEvent.IP_PROP_NAME+", count(distinct(site.country)) as nr from "+IpUsedEvent.class.getName()+".win:time(360 min) where type='"+IpUsedEventType.USE+"' group by "+IpUsedEvent.IP_PROP_NAME;
+		String query = "select distinct("+IpUsedEvent.IP_PROP_NAME+") from "+IpUsedEvent.class.getName()+" where type='"+IpUsedEventType.KNOWN_GOOD+"'";
 		EPStatement statement = epServiceProvider.getEPAdministrator().createEPL(query);
-		statement.addListener(new IpAddressUsedInDifferentCountriesEventListener(epServiceProvider));
+		statement.addListener(new IpAddressAnnouncedAsGoodEventListener(epServiceProvider));
 	}
-	
 	
 	private final EPServiceProvider epServiceProvider;
 	
-	private IpAddressUsedInDifferentCountriesEventListener(EPServiceProvider epServiceProvider){
+	private IpAddressAnnouncedAsGoodEventListener(EPServiceProvider epServiceProvider){
 		this.epServiceProvider = epServiceProvider;
 	}
 
@@ -43,11 +36,7 @@ public class IpAddressUsedInDifferentCountriesEventListener implements UpdateLis
 	public void update(EventBean[] newEvents, EventBean[] oldEvents) {
 		for (EventBean eventBean : newEvents){
 			String ip = (String)eventBean.get(IpUsedEvent.IP_PROP_NAME);
-			Long count = (Long)eventBean.get("nr");
-			
-			if (count > 1){
-				IpAddressUpdateUtil.update(ip, IpAddressStatus.USED_ANOMALOUSLY, epServiceProvider); 
-			}
+			IpAddressUpdateUtil.update(ip, IpAddressStatus.SUSPICIOUS, epServiceProvider); 
 		}
 	}
 

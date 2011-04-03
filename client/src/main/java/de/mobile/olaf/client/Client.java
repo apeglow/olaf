@@ -16,8 +16,9 @@ public class Client {
 		String ipAddress = args[1];
 		
 		
-		Random random = new Random(System.currentTimeMillis());
-		String eventType = IpUsedEventType.values()[random.nextInt(IpUsedEventType.values().length)].name();
+//		Random random = new Random(System.currentTimeMillis());
+//		String eventType = IpUsedEventType.values()[random.nextInt(IpUsedEventType.values().length)].name();
+		String eventType = IpUsedEventType.CONTACT.name();
 		
 		DatagramSocket socket = new DatagramSocket(); 
 		InetAddress ia =  InetAddress.getByName(server);		

@@ -9,20 +9,35 @@ import de.mobile.olaf.api.IpAddressStatus;
 import de.mobile.olaf.api.IpUsedEventType;
 import de.mobile.olaf.server.esper.event.IpUsedEvent;
 
+/**
+ * Rates an ip address as {@link IpAddressStatus#USED_FOR_FRAUD} if announced by a partner.
+ * 
+ * @author andre
+ *
+ */
 public class IpAddressAnnouncedAsFraudEventListener implements UpdateListener {
 	
+	/**
+	 * Registers an instance at the service provider.
+	 * 
+	 * @param epServiceProvider
+	 */
 	public static void register(EPServiceProvider epServiceProvider){
-		String query = "select * from "+IpUsedEvent.class.getName()+".win:time(360 min) where type='"+IpUsedEventType.FRAUD+"'";
+		String query = "select distinct("+IpUsedEvent.IP_PROP_NAME+") from "+IpUsedEvent.class.getName()+" where type='"+IpUsedEventType.FRAUD+"'";
 		EPStatement statement = epServiceProvider.getEPAdministrator().createEPL(query);
 		statement.addListener(new IpAddressAnnouncedAsFraudEventListener(epServiceProvider));
 	}
 	
 	private final EPServiceProvider epServiceProvider;
 	
-	public IpAddressAnnouncedAsFraudEventListener(EPServiceProvider epServiceProvider){
+	private IpAddressAnnouncedAsFraudEventListener(EPServiceProvider epServiceProvider){
 		this.epServiceProvider = epServiceProvider;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.espertech.esper.client.UpdateListener#update(com.espertech.esper.client.EventBean[], com.espertech.esper.client.EventBean[])
+	 */
 	@Override
 	public void update(EventBean[] newEvents, EventBean[] oldEvents) {
 		for (EventBean eventBean : newEvents){

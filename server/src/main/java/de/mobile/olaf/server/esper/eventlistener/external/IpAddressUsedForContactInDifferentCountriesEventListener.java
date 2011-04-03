@@ -10,12 +10,13 @@ import de.mobile.olaf.api.IpUsedEventType;
 import de.mobile.olaf.server.esper.event.IpUsedEvent;
 
 /**
- * Rates an ip address as {@link IpAddressStatus#USED_ANOMALOUSLY} if it is used in different countries within 6 hours.
+ * Rates an ip address as {@link IpAddressStatus#SUSPICIOUS} if it was used for contacting a seller in two different countries within the
+ * last 6 hours.
  * 
  * @author andre
  *
  */
-public class IpAddressUsedInDifferentCountriesEventListener implements UpdateListener {
+public class IpAddressUsedForContactInDifferentCountriesEventListener implements UpdateListener {
 	
 	/**
 	 * Registers an instance at the service provider.
@@ -23,15 +24,14 @@ public class IpAddressUsedInDifferentCountriesEventListener implements UpdateLis
 	 * @param epServiceProvider
 	 */
 	public static void register(EPServiceProvider epServiceProvider){
-		String query = "select "+IpUsedEvent.IP_PROP_NAME+", count(distinct(site.country)) as nr from "+IpUsedEvent.class.getName()+".win:time(360 min) where type='"+IpUsedEventType.USE+"' group by "+IpUsedEvent.IP_PROP_NAME;
+		String query = "select "+IpUsedEvent.IP_PROP_NAME+", count(distinct(site.country)) as nr from "+IpUsedEvent.class.getName()+".win:time(360 min) where type='"+IpUsedEventType.CONTACT+"' group by "+IpUsedEvent.IP_PROP_NAME;
 		EPStatement statement = epServiceProvider.getEPAdministrator().createEPL(query);
-		statement.addListener(new IpAddressUsedInDifferentCountriesEventListener(epServiceProvider));
+		statement.addListener(new IpAddressUsedForContactInDifferentCountriesEventListener(epServiceProvider));
 	}
-	
 	
 	private final EPServiceProvider epServiceProvider;
 	
-	private IpAddressUsedInDifferentCountriesEventListener(EPServiceProvider epServiceProvider){
+	private IpAddressUsedForContactInDifferentCountriesEventListener(EPServiceProvider epServiceProvider){
 		this.epServiceProvider = epServiceProvider;
 	}
 
@@ -46,9 +46,10 @@ public class IpAddressUsedInDifferentCountriesEventListener implements UpdateLis
 			Long count = (Long)eventBean.get("nr");
 			
 			if (count > 1){
-				IpAddressUpdateUtil.update(ip, IpAddressStatus.USED_ANOMALOUSLY, epServiceProvider); 
+				IpAddressUpdateUtil.update(ip, IpAddressStatus.SUSPICIOUS, epServiceProvider); 
 			}
 		}
+
 	}
 
 }

@@ -19,6 +19,12 @@ import de.mobile.olaf.server.domain.RatedIpAddress;
  */
 public class IpAddressRatedEventListener implements UpdateListener {
 	
+	/**
+	 * Register at the service provider.
+	 * 
+	 * @param epServiceProvider
+	 * @param partnersNotificationService
+	 */
 	public static void register(EPServiceProvider epServiceProvider, PartnersNotificationService partnersNotificationService){
 		String query = "select * from "+RatedIpAddress.class.getName();
 		EPStatement statement = epServiceProvider.getEPAdministrator().createEPL(query);
@@ -32,6 +38,10 @@ public class IpAddressRatedEventListener implements UpdateListener {
 		this.notificationService = notificationService;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.espertech.esper.client.UpdateListener#update(com.espertech.esper.client.EventBean[], com.espertech.esper.client.EventBean[])
+	 */
 	@Override
 	public void update(EventBean[] newEvents, EventBean[] oldEvents) {
 		Set<RatedIpAddress> changedIpStatuses = new HashSet<RatedIpAddress>();

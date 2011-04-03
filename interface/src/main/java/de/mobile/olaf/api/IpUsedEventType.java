@@ -16,16 +16,21 @@ public enum IpUsedEventType {
 	/**
 	 * ip address used for contacting a seller
 	 */
-	//CONTACT,
+	CONTACT,
 	
 	/**
 	 * ip address used for posting or modifying an ad
 	 */
-	//POST,
+	POST,
 	
 	/**
 	 * Fraud has been posted from this address.
 	 */
-	FRAUD
+	FRAUD,
+	
+	/**
+	 * ip address has been used for a doubtless "good" action.
+	 */
+	KNOWN_GOOD
 
 }
