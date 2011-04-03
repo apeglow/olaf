@@ -12,7 +12,7 @@
 	<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 	<olaf:ipStatusChangedEvents xmlns:olaf="http://www.mobile.de/olaf/api/rest/namespace">
 		{foreach $event in $events}
-			<olaf:newStatus olaf:address="{$event.address}" olaf:isUsedForSpam="{$event.spam}" olaf:isUsedForFraud="{$event.fraud}" olaf:isUsedAnomalously="{$event.anomalously}" />
+			<olaf:newStatus olaf:address="{$event.address}" olaf:status="{$event.status}" />
 		{/foreach}
 	</olaf:ipStatusChangedEvents>
 {/template}

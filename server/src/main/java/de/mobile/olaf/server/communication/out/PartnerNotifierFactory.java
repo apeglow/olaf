@@ -2,7 +2,7 @@ package de.mobile.olaf.server.communication.out;
 
 import java.util.Set;
 
-import de.mobile.olaf.server.domain.IpStatus;
+import de.mobile.olaf.server.domain.RatedIpAddress;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
 
@@ -21,7 +21,7 @@ public interface PartnerNotifierFactory {
 	 * @param changedStatuses
 	 * @return
 	 */
-	public Set<PartnerNotifier> create(Set<PartnerSite> sites, Set<IpStatus> changedStatuses);
+	public Set<PartnerNotifier> create(Set<PartnerSite> sites, Set<RatedIpAddress> changedStatuses);
 
 	/**
 	 * Get the type.

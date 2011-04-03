@@ -1,6 +1,8 @@
 package de.mobile.olaf.analysisreceiver.dummy;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
@@ -36,9 +38,19 @@ public class DummyServlet implements Servlet {
 
 	@Override
 	public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
+		System.out.println("Received notification");
+		
+		BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()));
+		String line = reader.readLine();
+		while (line != null){
+			System.out.println(line);
+		}
+		
+		reader.close();
+		
 		HttpServletResponse r = (HttpServletResponse)response;
 		r.setStatus(200);
-		System.out.println("Received notification");
+		
 	}
 
 }

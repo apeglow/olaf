@@ -22,7 +22,7 @@ import com.google.template.soy.tofu.SoyTofu;
 
 import de.mobile.olaf.server.communication.out.PartnerNotifier;
 import de.mobile.olaf.server.communication.out.PartnerNotifierFactory;
-import de.mobile.olaf.server.domain.IpStatus;
+import de.mobile.olaf.server.domain.RatedIpAddress;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
 
@@ -62,7 +62,7 @@ public class RestPartnerNotifierFactory implements PartnerNotifierFactory {
 	 * @see de.mobile.olaf.server.communication.out.PartnerNotifierFactory#create(java.util.Set, java.util.Map)
 	 */
 	@Override
-	public Set<PartnerNotifier> create(Set<PartnerSite> sites, Set<IpStatus> changedStatuses) {
+	public Set<PartnerNotifier> create(Set<PartnerSite> sites, Set<RatedIpAddress> changedStatuses) {
 		String xml = createMessage(changedStatuses);
 		Set<PartnerNotifier> notifiers = new HashSet<PartnerNotifier>();
 		for (PartnerSite site : sites){
@@ -84,16 +84,14 @@ public class RestPartnerNotifierFactory implements PartnerNotifierFactory {
 	}
 
 	
-	private String createMessage(Set<IpStatus> changedIpStatuses) {
+	private String createMessage(Set<RatedIpAddress> changedIpStatuses) {
 		SoyMapData soyMapData = new SoyMapData();
 	    List<Map<String, String>> viewEvents = new ArrayList<Map<String,String>>();
-	    for (IpStatus ipStatus : changedIpStatuses){
+	    for (RatedIpAddress ipStatus : changedIpStatuses){
 	    	
 	    	Map<String, String> viewEvent = new HashMap<String, String>();
 	    	viewEvent.put("address", ipStatus.getAddress());
-	    	viewEvent.put("spam", Boolean.toString(ipStatus.isUsedForSpam()));
-	    	viewEvent.put("fraud", Boolean.toString(ipStatus.isUsedForFraud()));
-	    	viewEvent.put("anomalously", Boolean.toString(ipStatus.isUsedAnomalously()));
+	    	viewEvent.put("status", ipStatus.getStatus().name());
 	    	
 	    	viewEvents.add(viewEvent);
 	    }

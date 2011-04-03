@@ -24,8 +24,10 @@ import de.mobile.olaf.server.domain.Country;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
 import de.mobile.olaf.server.domain.PartnerSiteType;
+import de.mobile.olaf.server.domain.RatedIpAddress;
+import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedForFraud;
 import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedInDifferentCountriesEventListener;
-import de.mobile.olaf.server.esper.eventlistener.internal.IpAddressRatedAsAnomalouslyUsedEventListener;
+import de.mobile.olaf.server.esper.eventlistener.internal.IpAddressRatedEventListener;
 
 /**
  * The OLAF application.
@@ -49,6 +51,8 @@ public class Olaf {
 		}
 	}
 	
+	public final static String RATED_IP_ADDRESS_WINDOW_NAME = "RatedIpAddressWindow";
+	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final IpAddressUsageNotificationService ipAddressUsageNotificationService;
 	private final PartnersNotificationService partnersNotificationService;
@@ -69,20 +73,36 @@ public class Olaf {
 		EPServiceProvider epServiceProvider = EPServiceProviderManager.getDefaultProvider();
 		partnersNotificationService = new PartnersNotificationService(new HashSet<PartnerSite>(ipAddress2SiteMap));
 		ipAddressUsageNotificationService = new IpAddressUsageNotificationService(epServiceProvider);
+		epServiceProvider.getEPAdministrator().createEPL("create window "+RATED_IP_ADDRESS_WINDOW_NAME+".win:time(360 min) as select * from "+RatedIpAddress.class.getName());
+		epServiceProvider.getEPAdministrator().createEPL("insert into "+RATED_IP_ADDRESS_WINDOW_NAME+" select * from "+RatedIpAddress.class.getName());
 		
-		/*
-		 * Listen to ip usage events
-		 */
-		EPStatement unusalUsageEventStatement = epServiceProvider.getEPAdministrator().createEPL(IpAddressUsedInDifferentCountriesEventListener.QUERY);
-		IpAddressUsedInDifferentCountriesEventListener unusalUsageStatusSettingEventUpdateListener = new IpAddressUsedInDifferentCountriesEventListener(epServiceProvider);
-		unusalUsageEventStatement.addListener(unusalUsageStatusSettingEventUpdateListener);
 		
-		/*
-		 * Listen to ip address usage status change events
-		 */
-		EPStatement ipAddressUsedUnusallyStatement = epServiceProvider.getEPAdministrator().createEPL(IpAddressRatedAsAnomalouslyUsedEventListener.QUERY);
-		IpAddressRatedAsAnomalouslyUsedEventListener ipAddressRatedAsUnsuallyUsedEventListener = new IpAddressRatedAsAnomalouslyUsedEventListener(partnersNotificationService);
-		ipAddressUsedUnusallyStatement.addListener(ipAddressRatedAsUnsuallyUsedEventListener);
+		{
+			/*
+			 * Listen to ip usage in different countries events
+			 */
+			EPStatement unusalUsageEventStatement = epServiceProvider.getEPAdministrator().createEPL(IpAddressUsedInDifferentCountriesEventListener.QUERY);
+			IpAddressUsedInDifferentCountriesEventListener unusalUsageStatusSettingEventUpdateListener = new IpAddressUsedInDifferentCountriesEventListener(epServiceProvider);
+			unusalUsageEventStatement.addListener(unusalUsageStatusSettingEventUpdateListener);
+		}
+		
+		{
+			/*
+			 * Listen to ip usage in different countries events
+			 */
+			EPStatement fraudulentUsageEventStatement = epServiceProvider.getEPAdministrator().createEPL(IpAddressUsedForFraud.QUERY);
+			IpAddressUsedForFraud fraudulentUsageStatusSettingEventUpdateListener = new IpAddressUsedForFraud(epServiceProvider);
+			fraudulentUsageEventStatement.addListener(fraudulentUsageStatusSettingEventUpdateListener);
+		}
+		
+		{
+			/*
+			 * Listen to ip address usage status change events
+			 */
+			EPStatement ipAddressUsedUnusallyStatement = epServiceProvider.getEPAdministrator().createEPL(IpAddressRatedEventListener.QUERY);
+			IpAddressRatedEventListener ipAddressRatedAsUnsuallyUsedEventListener = new IpAddressRatedEventListener(partnersNotificationService);
+			ipAddressUsedUnusallyStatement.addListener(ipAddressRatedAsUnsuallyUsedEventListener);
+		}
 	}
 	
 	/**

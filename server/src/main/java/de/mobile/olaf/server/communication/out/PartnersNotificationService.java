@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.mobile.olaf.server.communication.out.rest.RestPartnerNotifierFactory;
-import de.mobile.olaf.server.domain.IpStatus;
+import de.mobile.olaf.server.domain.RatedIpAddress;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
 import de.mobile.olaf.server.domain.PartnerSite;
 
@@ -76,7 +76,7 @@ public class PartnersNotificationService {
 	 * @param events
 	 * 
 	 */
-	public void ipStatusChanged(Set<IpStatus> changedIpStatuses){
+	public void ipStatusChanged(Set<RatedIpAddress> changedIpStatuses){
 		if (logger.isDebugEnabled()){
 			logger.debug("ip status changed. informing partners.");
 		}
