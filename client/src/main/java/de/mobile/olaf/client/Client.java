@@ -4,13 +4,20 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Random;
+
+import de.mobile.olaf.api.IpAddressStatus;
+import de.mobile.olaf.api.IpUsedEventType;
 
 public class Client {
 	
 	public static void main(String[] args) throws IOException {
 		String server = args[0]; 
 		String ipAddress = args[1];
-		String eventType = args[2];
+		
+		
+		Random random = new Random(System.currentTimeMillis());
+		String eventType = IpUsedEventType.values()[random.nextInt(IpUsedEventType.values().length)].name();
 		
 		DatagramSocket socket = new DatagramSocket(); 
 		InetAddress ia =  InetAddress.getByName(server);		

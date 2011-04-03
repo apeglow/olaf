@@ -3,6 +3,8 @@ package de.mobile.olaf.server.esper.eventlistener.internal;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.UpdateListener;
 
@@ -17,11 +19,16 @@ import de.mobile.olaf.server.domain.RatedIpAddress;
  */
 public class IpAddressRatedEventListener implements UpdateListener {
 	
-	public final static String QUERY = "select * from "+RatedIpAddress.class.getName();
+	public static void register(EPServiceProvider epServiceProvider, PartnersNotificationService partnersNotificationService){
+		String query = "select * from "+RatedIpAddress.class.getName();
+		EPStatement statement = epServiceProvider.getEPAdministrator().createEPL(query);
+		statement.addListener(new IpAddressRatedEventListener(partnersNotificationService));
+	}
+	
 
 	private final PartnersNotificationService notificationService;
 	
-	public IpAddressRatedEventListener(PartnersNotificationService notificationService){
+	private IpAddressRatedEventListener(PartnersNotificationService notificationService){
 		this.notificationService = notificationService;
 	}
 	
