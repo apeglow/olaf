@@ -1,5 +1,6 @@
 package de.mobile.olaf.server.communication.out;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -55,7 +56,7 @@ public class PartnersNotificationService {
 	 * 
 	 * @param sites
 	 */
-	public PartnersNotificationService(Set<PartnerSite> sites){
+	public PartnersNotificationService(Collection<PartnerSite> sites){
 		partnerSites = new ConcurrentHashMap<PartnerNotifierType, Map<PartnerSite, ExecutorService>>();
 		
 		for (PartnerSite site:sites){

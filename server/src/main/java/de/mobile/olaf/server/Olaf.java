@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -42,51 +43,44 @@ public class Olaf {
 	/**
 	 * This map will be stored either in a database or a config file later.
 	 */
-	public final static List<PartnerSite> ipAddress2SiteMap = new ArrayList<PartnerSite>();
-	static {
-		try {
-			ipAddress2SiteMap.add(new PartnerSite("mobile.de", Country.DE, PartnerSiteType.MOTORS_CLASSIFIED, PartnerNotifierType.REST, new URI("http://localhost:8080/olaf_rest_service")));
-			ipAddress2SiteMap.add(new PartnerSite("marktplaats", Country.NL, PartnerSiteType.GENERAL_CLASSIFIED, PartnerNotifierType.REST, new URI("http://localhost:8080/olaf_rest_service")));
-			ipAddress2SiteMap.add(new PartnerSite("annunci", Country.IT, PartnerSiteType.GENERAL_CLASSIFIED, PartnerNotifierType.REST, new URI("http://localhost:8080/olaf_rest_service")));
-		} catch (URISyntaxException e){
-			throw new RuntimeException(e);
-		}
-	}
+	public final static List<PartnerSite> ipAddress2SiteMap = Arrays.asList(
+			new PartnerSite("mobile.de", Country.DE, PartnerSiteType.MOTORS_CLASSIFIED, PartnerNotifierType.REST, URI.create("http://localhost:8080/olaf_rest_service")),
+			new PartnerSite("marktplaats", Country.NL, PartnerSiteType.GENERAL_CLASSIFIED, PartnerNotifierType.REST, URI.create("http://localhost:8080/olaf_rest_service")),
+			new PartnerSite("annunci", Country.IT, PartnerSiteType.GENERAL_CLASSIFIED, PartnerNotifierType.REST, URI.create("http://localhost:8080/olaf_rest_service")));
 	
-	public final static String RATED_IP_ADDRESS_WINDOW_NAME = "RatedIpAddressWindow";
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	private final IpAddressUsageNotificationService ipAddressUsageNotificationService;
+	
 	private final PartnersNotificationService partnersNotificationService;
+	
 	private final ExecutorService executorService = Executors.newCachedThreadPool();
 	
 	private volatile boolean run = true;
-	
-	
 	
 	public static void main(String[] args) throws IOException {
 		Olaf olaf = new Olaf();
 		olaf.start();
 	}
 	
-	
-	
-	public Olaf(){
+	public Olaf() {
 		EPServiceProvider epServiceProvider = EPServiceProviderManager.getDefaultProvider();
-		partnersNotificationService = new PartnersNotificationService(new HashSet<PartnerSite>(ipAddress2SiteMap));
+		partnersNotificationService = new PartnersNotificationService(ipAddress2SiteMap);
 		ipAddressUsageNotificationService = new IpAddressUsageNotificationService(epServiceProvider);
-		epServiceProvider.getEPAdministrator().createEPL("create window "+RATED_IP_ADDRESS_WINDOW_NAME+".win:time(360 min) as select * from "+RatedIpAddress.class.getName());
-		epServiceProvider.getEPAdministrator().createEPL("insert into "+RATED_IP_ADDRESS_WINDOW_NAME+" select * from "+RatedIpAddress.class.getName());
+		
+		epServiceProvider //
+			.getEPAdministrator() //
+			.createEPL("create window RatedIpAddressWindow.win:time(360 min) as " +
+					   "select * from " + RatedIpAddress.class.getName());
+		epServiceProvider //
+			.getEPAdministrator() //
+			.createEPL("insert into RatedIpAddressWindow select * from " + RatedIpAddress.class.getName());
 		
 		/*
 		 * listen to ip address rated events
 		 */
 		IpAddressRatedEventListener.register(epServiceProvider, partnersNotificationService);
-		
-		
-		
-		
-		
 		
 		/*
 		 * Listen to ip usage in different countries events
@@ -128,10 +122,9 @@ public class Olaf {
 		 * This here is only temporarily.
 		 */
 		
-		
 		DatagramSocket socket = new DatagramSocket(5555);
 		
-		while(run){
+		while (run) {
 			DatagramPacket packet = new DatagramPacket( new byte[256], 256);
 			socket.receive(packet);
 			logger.debug("New packet received.");
@@ -139,7 +132,6 @@ public class Olaf {
 			RemoteEventNotificationWorker notificationWorker = new RemoteEventNotificationWorker(packet, ipAddressUsageNotificationService);
 			executorService.execute(notificationWorker);
 		}
-		
 	}
 	
 	
@@ -148,8 +140,6 @@ public class Olaf {
 		executorService.shutdown();
 		partnersNotificationService.shutdown();
 	}
-	
-
 	
 
 }

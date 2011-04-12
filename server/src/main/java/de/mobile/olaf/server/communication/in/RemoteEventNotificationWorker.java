@@ -43,7 +43,7 @@ public class RemoteEventNotificationWorker implements Runnable {
 		InetAddress address = datagramPacket.getAddress();
 		PartnerSite site = Olaf.ipAddress2SiteMap.get(siteDie.nextInt(Olaf.ipAddress2SiteMap.size()));
 		
-		if (site != null){
+		if (site != null) {
 			byte[] data = datagramPacket.getData();
 			
 			try {

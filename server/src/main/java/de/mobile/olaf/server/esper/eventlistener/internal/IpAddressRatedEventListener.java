@@ -26,7 +26,7 @@ public class IpAddressRatedEventListener implements UpdateListener {
 	 * @param partnersNotificationService
 	 */
 	public static void register(EPServiceProvider epServiceProvider, PartnersNotificationService partnersNotificationService){
-		String query = "select * from "+RatedIpAddress.class.getName();
+		String query = "select * from " + RatedIpAddress.class.getName();
 		EPStatement statement = epServiceProvider.getEPAdministrator().createEPL(query);
 		statement.addListener(new IpAddressRatedEventListener(partnersNotificationService));
 	}

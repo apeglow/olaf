@@ -7,10 +7,11 @@
 	<property name="main-class"  value="de.mobile.olaf.server.Olaf"/>
 	<property name="lib.dir"     value="lib"/>
 
+<!--
     <path id="classpath">
         <fileset dir="lib" includes="**/*.jar"/>
     </path>
-
+-->
 
 
     <target name="clean">
@@ -19,7 +20,7 @@
                 
     <target name="compile" depends="clean">
 	        <mkdir dir="${classes.dir}"/>
-	        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+	        <javac srcdir="${src.dir}" destdir="${classes.dir}" />
     </target>
 
 

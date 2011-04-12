@@ -5,7 +5,6 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EventBean;
 
 import de.mobile.olaf.api.IpAddressStatus;
-import de.mobile.olaf.server.Olaf;
 import de.mobile.olaf.server.domain.RatedIpAddress;
 
 public class IpAddressUpdateUtil {
@@ -17,10 +16,10 @@ public class IpAddressUpdateUtil {
 	 * @param status
 	 * @param epServiceProvider
 	 */
+	
 	public static void update(String ipAddress, IpAddressStatus status, EPServiceProvider epServiceProvider){
-		String query = "select * from "+Olaf.RATED_IP_ADDRESS_WINDOW_NAME+" where address='"+ipAddress+"'";
+		String query = "select * from RatedIpAddressWindow where address=' " + ipAddress + "'";
 		EPOnDemandQueryResult result = epServiceProvider.getEPRuntime().executeQuery(query);
-		
 		EventBean[] ratedIpAddressEventBeans = result.getArray();
 		
 		if (ratedIpAddressEventBeans == null || ratedIpAddressEventBeans.length == 0){
@@ -28,15 +27,13 @@ public class IpAddressUpdateUtil {
 			// store new ip status
 			epServiceProvider.getEPRuntime().sendEvent(ratedIpAddress);
 		} else {
-			
 			for (EventBean ratedIpAddressEventBean: ratedIpAddressEventBeans){
 				RatedIpAddress ratedIpAddress = (RatedIpAddress)ratedIpAddressEventBean.getUnderlying();
 				if (ratedIpAddress.getStatus() != status){
-					
 					/*
 					 * either the status gets 'up' or the new status is FRAUD 
 					 */
-					if (ratedIpAddress.getStatus().compareTo(status)<0 || status == IpAddressStatus.USED_FOR_FRAUD){
+					if (ratedIpAddress.getStatus().compareTo(status)<0 || status == IpAddressStatus.USED_FOR_FRAUD) {
 						ratedIpAddress.setStatus(status);
 						// store new ip status
 						epServiceProvider.getEPRuntime().sendEvent(ratedIpAddress);

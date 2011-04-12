@@ -23,7 +23,7 @@ public class IpAddressAnnouncedAsFraudEventListener implements UpdateListener {
 	 * @param epServiceProvider
 	 */
 	public static void register(EPServiceProvider epServiceProvider){
-		String query = "select distinct("+IpUsedEvent.IP_PROP_NAME+") from "+IpUsedEvent.class.getName()+" where type='"+IpUsedEventType.FRAUD+"'";
+		String query = "select distinct(ip) from " + IpUsedEvent.class.getName() + " where type='" + IpUsedEventType.FRAUD + "'";
 		EPStatement statement = epServiceProvider.getEPAdministrator().createEPL(query);
 		statement.addListener(new IpAddressAnnouncedAsFraudEventListener(epServiceProvider));
 	}
@@ -42,10 +42,12 @@ public class IpAddressAnnouncedAsFraudEventListener implements UpdateListener {
 	public void update(EventBean[] newEvents, EventBean[] oldEvents) {
 		for (EventBean eventBean : newEvents){
 			String ip = (String)eventBean.get(IpUsedEvent.IP_PROP_NAME);
-			
 			IpAddressUpdateUtil.update(ip, IpAddressStatus.USED_FOR_FRAUD, epServiceProvider); 
-			
 		}
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(IpUsedEvent.class);
 	}
 
 }
