@@ -1,6 +1,5 @@
 package de.mobile.olaf.server;
 
-import java.net.InetAddress;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +37,9 @@ public class IpAddressUsageNotificationService {
 	 * @param site
 	 * @param eventType
 	 */
-	public void notify(InetAddress ipAddress, PartnerSite site, IpUsedEventType eventType){
+	public void notify(Ip4Address ipAddress, PartnerSite site, IpUsedEventType eventType){
 		logger.info("Received {} notification for ip-address {} on site {}", new Object[] {eventType, ipAddress, site});
-		IpUsedEvent ipUsageEvent = new IpUsedEvent(Ip4Address.fromBytes(ipAddress.getAddress()), eventType, site);
+		IpUsedEvent ipUsageEvent = new IpUsedEvent(ipAddress, eventType, site);
 		epServiceProvider.getEPRuntime().sendEvent(ipUsageEvent);
 		
 	}

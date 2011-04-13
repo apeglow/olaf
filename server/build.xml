@@ -1,4 +1,4 @@
-<project name="server">
+<project name="olaf-server">
  <property name="main-class"  value="de.mobile.olaf.server.Olaf"/>
  <import file="../build.xml"/>
 </project>

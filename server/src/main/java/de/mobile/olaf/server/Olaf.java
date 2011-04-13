@@ -5,10 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -46,8 +43,7 @@ public class Olaf {
 	public final static List<PartnerSite> ipAddress2SiteMap = Arrays.asList(
 			new PartnerSite("mobile.de", Country.DE, PartnerSiteType.MOTORS_CLASSIFIED, PartnerNotifierType.REST, URI.create("http://localhost:8080/olaf_rest_service")),
 			new PartnerSite("marktplaats", Country.NL, PartnerSiteType.GENERAL_CLASSIFIED, PartnerNotifierType.REST, URI.create("http://localhost:8080/olaf_rest_service")),
-			new PartnerSite("annunci", Country.IT, PartnerSiteType.GENERAL_CLASSIFIED, PartnerNotifierType.REST, URI.create("http://localhost:8080/olaf_rest_service")));
-	
+			new PartnerSite("annunci", Country.IT, PartnerSiteType.GENERAL_CLASSIFIED, PartnerNotifierType.REST, URI.create("http://localhost:8080/olaf_rest_service")));//
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -73,6 +69,7 @@ public class Olaf {
 			.getEPAdministrator() //
 			.createEPL("create window RatedIpAddressWindow.win:time(360 min) as " +
 					   "select * from " + RatedIpAddress.class.getName());
+		
 		epServiceProvider //
 			.getEPAdministrator() //
 			.createEPL("insert into RatedIpAddressWindow select * from " + RatedIpAddress.class.getName());
@@ -80,7 +77,7 @@ public class Olaf {
 		/*
 		 * listen to ip address rated events
 		 */
-		IpAddressRatedEventListener.register(epServiceProvider, partnersNotificationService);
+		//IpAddressRatedEventListener.register(epServiceProvider, partnersNotificationService);
 		
 		/*
 		 * Listen to ip usage in different countries events
@@ -108,7 +105,7 @@ public class Olaf {
 		IpAddressUsedForPostingInDifferentCountriesEventListener.register(epServiceProvider);
 	}
 	
-	
+	int numMessages;
 	/**
 	 * Starts the service.
 	 * 
@@ -127,8 +124,8 @@ public class Olaf {
 		while (run) {
 			DatagramPacket packet = new DatagramPacket( new byte[256], 256);
 			socket.receive(packet);
-			logger.debug("New packet received.");
-			
+			numMessages += 1;
+			logger.info("got {} messages so far", numMessages);
 			RemoteEventNotificationWorker notificationWorker = new RemoteEventNotificationWorker(packet, ipAddressUsageNotificationService);
 			executorService.execute(notificationWorker);
 		}

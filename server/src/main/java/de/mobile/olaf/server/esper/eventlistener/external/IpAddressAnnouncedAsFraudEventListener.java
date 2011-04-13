@@ -45,9 +45,4 @@ public class IpAddressAnnouncedAsFraudEventListener implements UpdateListener {
 			IpAddressUpdateUtil.update(ip, IpAddressStatus.USED_FOR_FRAUD, epServiceProvider); 
 		}
 	}
-	
-	public static void main(String[] args) {
-		System.out.println(IpUsedEvent.class);
-	}
-
 }

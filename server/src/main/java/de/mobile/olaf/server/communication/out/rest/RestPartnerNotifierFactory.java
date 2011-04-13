@@ -42,14 +42,14 @@ public class RestPartnerNotifierFactory implements PartnerNotifierFactory {
 	 * 
 	 * @param site
 	 */
-	public RestPartnerNotifierFactory(){
+	public RestPartnerNotifierFactory() {
 		HttpParams httpParams = new BasicHttpParams();
 		this.httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(), httpParams);
 		
-		String templatePath = "de/mobile/olaf/server/communication/out/rest/IpStatusChangedEvent.xml.soy";
-		URL xmlTemplateUrl = Thread.currentThread().getContextClassLoader().getResource(templatePath);
+		String template = "IpStatusChangedEvent.xml.soy";
+		URL xmlTemplateUrl = getClass().getResource(template);
 		if (xmlTemplateUrl == null){
-			throw new RuntimeException("xml template \""+templatePath+"\".");
+			throw new RuntimeException("xml template " + template + " not found");
 		}
 		
 		// TODO: SoyTofu looks threadsafe but we must find out for sure
@@ -84,24 +84,18 @@ public class RestPartnerNotifierFactory implements PartnerNotifierFactory {
 	}
 
 	
-	private String createMessage(Set<RatedIpAddress> changedIpStatuses) {
+	private String createMessage(Set<RatedIpAddress> changedIpStates) {
 		SoyMapData soyMapData = new SoyMapData();
 	    List<Map<String, String>> viewEvents = new ArrayList<Map<String,String>>();
-	    for (RatedIpAddress ipStatus : changedIpStatuses){
-	    	
+	    for (RatedIpAddress ipStatus : changedIpStates){
 	    	Map<String, String> viewEvent = new HashMap<String, String>();
 	    	viewEvent.put("address", ipStatus.getAddress());
 	    	viewEvent.put("status", ipStatus.getStatus().name());
-	    	
 	    	viewEvents.add(viewEvent);
 	    }
-	    
 	    soyMapData.put("events", viewEvents);
-
 	    String xml = xmlSoyTofu.render("de.mobile.olaf.api.rest.xml", soyMapData, null);
-	    
 	    logger.debug(xml);
-	    
 	    return xml;
 	}
 

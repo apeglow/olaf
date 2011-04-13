@@ -9,6 +9,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,8 @@ public class RestPartnerNotifier implements PartnerNotifier {
 		    } else if (logger.isDebugEnabled()){
 		    	logger.debug("Event sent to "+site+".");
 		    }
-		    
+		} catch (HttpHostConnectException e) {
+			logger.info("host {} not avialable", e.getHost());
 		} catch (UnsupportedEncodingException e){
 			throw new RuntimeException(e);
 		} catch (IOException e){

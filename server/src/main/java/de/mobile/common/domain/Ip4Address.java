@@ -15,11 +15,7 @@ public final class Ip4Address implements Comparable<Ip4Address>, Serializable {
 
     private final int address;
 
-    Ip4Address(long number) {
-        this.address = (int) (number & 0xffffffffL);
-    }
-    
-    Ip4Address(int number) {
+    public Ip4Address(int number) {
     	this.address = number;
     }
 
@@ -28,7 +24,11 @@ public final class Ip4Address implements Comparable<Ip4Address>, Serializable {
     }
     
     public static Ip4Address fromBytes(byte[] bytes) {
-    	return new Ip4Address(fromBytes(bytes[0], bytes[1], bytes[2], bytes[3]));
+    	return fromBytes(bytes, 0);
+    }
+    
+    public static Ip4Address fromBytes(byte[] bytes, int offset) {
+    	return new Ip4Address(fromBytes(bytes[offset+0], bytes[offset + 1], bytes[offset + 2], bytes[offset + 3]));
     }
     
     static int fromBytes(byte b1, byte b2, byte b3, byte b4) {

@@ -40,10 +40,6 @@ public class PartnersNotificationService {
 	private final static int THREADS_PER_SITE = 5;
 	
 	
-	
-	
-	
-	
 	/** class members **/
 	
 	private final Map<PartnerNotifierType, Map<PartnerSite,ExecutorService>> partnerSites;
@@ -59,7 +55,7 @@ public class PartnersNotificationService {
 	public PartnersNotificationService(Collection<PartnerSite> sites){
 		partnerSites = new ConcurrentHashMap<PartnerNotifierType, Map<PartnerSite, ExecutorService>>();
 		
-		for (PartnerSite site:sites){
+		for (PartnerSite site:sites) {
 			ExecutorService executorService = new ThreadPoolExecutor(1, THREADS_PER_SITE, 50000L,   TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100));
 			Map<PartnerSite, ExecutorService> sitesWithExecutors = partnerSites.get(site.getPartnerNotifierType());
 			if (sitesWithExecutors == null){
