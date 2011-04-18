@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 
 public final class Message {
 
-	private final static int version = 1;
+    private final static int version = 1;
     private final int ip;
     private final int clientId;
     private final int eventId;
@@ -19,36 +19,36 @@ public final class Message {
         this.eventId = eventId;
         this.time = time;
     }
-    
+
     public byte[] asBytes() {
-    	try {
-    		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    		DataOutputStream dos = new DataOutputStream(bos);
-    		dos.writeShort(version);
-    		dos.writeLong(time);
-    		dos.writeInt(clientId);
-    		dos.writeShort(eventId);
-    		dos.writeInt(ip);
-    		dos.flush();
-    		return bos.toByteArray();
-    	} catch (IOException unlikely) {
-    		throw new RuntimeException(unlikely);
-    	}
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            DataOutputStream dos = new DataOutputStream(bos);
+            dos.writeShort(version);
+            dos.writeLong(time);
+            dos.writeInt(clientId);
+            dos.writeShort(eventId);
+            dos.writeInt(ip);
+            dos.flush();
+            return bos.toByteArray();
+        } catch (IOException unlikely) {
+            throw new RuntimeException(unlikely);
+        }
     }
-    
+
     public static Message fromBytes(byte[] bytes) {
-    	ByteBuffer buffer = ByteBuffer.wrap(bytes);
-    	@SuppressWarnings("unused")
-    	int version = buffer.getShort();
-    	long time = buffer.getLong();
-    	int clientId = buffer.getInt();
-    	int eventId = buffer.getShort();
-    	int ip = buffer.getInt();
-    	return new Message(ip, clientId, eventId, time);
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        @SuppressWarnings("unused")
+        int version = buffer.getShort();
+        long time = buffer.getLong();
+        int clientId = buffer.getInt();
+        int eventId = buffer.getShort();
+        int ip = buffer.getInt();
+        return new Message(ip, clientId, eventId, time);
     }
-    
+
     private Message(Builder builder) {
-        this(builder.ip, builder.clientId, builder.eventId, builder.time);   
+        this(builder.ip, builder.clientId, builder.eventId, builder.time);
     }
 
     public static Builder newBuilder() {
@@ -56,11 +56,11 @@ public final class Message {
     }
 
     public Builder asBuilder() {
-        return newBuilder()
-            .setIp(this.ip)
-            .setClientId(this.clientId)
-            .setEventId(this.eventId)
-            .setTime(this.time);
+        return newBuilder() //
+                .setIp(this.ip) //
+                .setClientId(this.clientId) //
+                .setEventId(this.eventId) //
+                .setTime(this.time);
     }
 
     // GETTERS
@@ -79,10 +79,10 @@ public final class Message {
     public long getTime() {
         return time;
     }
-    
+
     public int getVersion() {
-		return version;
-	}
+        return version;
+    }
 
     public Message clone() {
         try {
@@ -91,7 +91,7 @@ public final class Message {
             throw new AssertionError();
         }
     }
-        
+
     @Override
     public int hashCode() {
         final int PRIME = 31;
@@ -102,8 +102,8 @@ public final class Message {
         result = PRIME * result + (int) (time ^ (time >>> 32));
         return result;
     }
-        
-    @Override 
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -113,7 +113,7 @@ public final class Message {
             return false;
         final Message other = (Message) obj;
         if (ip != other.ip)
-        	return false;
+            return false;
         if (clientId != other.clientId)
             return false;
         if (eventId != other.eventId)
@@ -122,55 +122,60 @@ public final class Message {
             return false;
         return true;
     }
-    
-    @Override
-	public String toString() {
-		return "Message [version=" + version + ", time=" + time + ", clientId=" + clientId
-				+ ", eventId=" + eventId + ", ip=" + ip + "]";
-	}
 
-	public static class Builder {
+    @Override
+    public String toString() {
+        return "Message [version=" + version + ", time=" + time + ", clientId="
+                + clientId + ", eventId=" + eventId + ", ip=" + ip + "]";
+    }
+
+    public static class Builder {
         private int ip;
         private int clientId;
         private int eventId;
         private long time;
-    	
-    	public Builder setIp(String ip) {
-    	    this.ip = aton(ip); return this;
-    	}
-    	
-    	public Builder setIp(int ip) {
-    		this.ip = ip; return this;
-    	}
-    	
-    	public Builder setClientId(int clientId) {
-    	    this.clientId = clientId; return this;
-    	}
-    	
-    	public Builder setEventId(int eventId) {
-    	    this.eventId = eventId; return this;
-    	}
-    	
-    	public Builder setTime(long time) {
-    	    this.time = time; return this;
-    	}
-    	
-    	public Message build() {
-    	    return new Message(this);
-    	}
+
+        public Builder setIp(String ip) {
+            this.ip = aton(ip);
+            return this;
+        }
+
+        public Builder setIp(int ip) {
+            this.ip = ip;
+            return this;
+        }
+
+        public Builder setClientId(int clientId) {
+            this.clientId = clientId;
+            return this;
+        }
+
+        public Builder setEventId(int eventId) {
+            this.eventId = eventId;
+            return this;
+        }
+
+        public Builder setTime(long time) {
+            this.time = time;
+            return this;
+        }
+
+        public Message build() {
+            return new Message(this);
+        }
     }
 
-	static int aton(String address) {
-		if (address == null)
-			throw new NullPointerException();
-		String[] parts = address.split("\\.");
-		if (parts.length > 4)
-			throw new IllegalArgumentException();
-		int n = 0;
-		for (int i = 0, j = 24; i < parts.length; i++, j -= 8) {
-			n |= (Integer.valueOf(parts[i]) & 0xff) << j;
-		}
-		return n;
-	}
+    static int aton(String address) {
+        if (address == null)
+            throw new NullPointerException();
+        String[] parts = address.split("\\.");
+        if (parts.length > 4)
+            throw new IllegalArgumentException();
+        int n = 0;
+        for (int i = 0, j = 24; i < parts.length; i++, j -= 8) {
+            n |= (Integer.valueOf(parts[i]) & 0xff) << j;
+        }
+        return n;
+    }
 
 }

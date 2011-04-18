@@ -3,7 +3,7 @@ package de.mobile.olaf.client.intern;
 import java.io.Closeable;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import org.jboss.netty.bootstrap.ConnectionlessBootstrap;
@@ -25,20 +25,20 @@ public class NettyUdpClient implements Closeable {
     final DatagramChannelFactory factory;
     final DatagramChannel channel;
     final InetSocketAddress address;
+    final ThreadPoolExecutor executors;
 
     public NettyUdpClient(String host, int port) {
         address = new InetSocketAddress(host, port);
-        factory = new NioDatagramChannelFactory(Executors.newCachedThreadPool());
+        executors = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        factory = new NioDatagramChannelFactory(executors);
         ConnectionlessBootstrap b = new ConnectionlessBootstrap(factory);
+        b.setOption("sendBufferSize", 64);
         b.setPipelineFactory(new ChannelPipelineFactory() {
             public ChannelPipeline getPipeline() throws Exception {
                 return Channels.pipeline(new ByteBufferEncoder(),
                         new SimpleChannelUpstreamHandler() {
-                            public void exceptionCaught(
-                                    ChannelHandlerContext ctx, ExceptionEvent e)
-                                    throws Exception {
-                                Logger.getLogger(getClass().getName()).info(
-                                        e.toString());
+                            public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
+                                Logger.getLogger(getClass().getName()).info(e.toString());
                             };
                         });
             }
@@ -47,12 +47,11 @@ public class NettyUdpClient implements Closeable {
     }
 
     public void sendMessage(final byte[] buf) {
-        System.out.println("sending... " + new String(buf));
         channel.write(buf, address);
     }
 
     public void close() {
-        channel.close().awaitUninterruptibly(30, TimeUnit.SECONDS);
+        channel.close().awaitUninterruptibly();
         factory.releaseExternalResources();
     }
 

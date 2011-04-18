@@ -1,4 +1,5 @@
 <project name="olaf-client">
  <import file="../build.xml"/>
+ <property name="main-class" value="de.mobile.olaf.client.Client" />
 </project>
                                                                                                                                 
