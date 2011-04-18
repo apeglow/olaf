@@ -1,21 +1,13 @@
 package de.mobile.olaf.server;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 
-import de.mobile.olaf.server.communication.in.RemoteEventNotificationWorker;
 import de.mobile.olaf.server.communication.out.PartnersNotificationService;
 import de.mobile.olaf.server.domain.Country;
 import de.mobile.olaf.server.domain.PartnerNotifierType;
@@ -27,7 +19,6 @@ import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedForContac
 import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedForContactInDifferentCountriesEventListener;
 import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedForPostingInDifferentCountriesEventListener;
 import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedInDifferentCountriesEventListener;
-import de.mobile.olaf.server.esper.eventlistener.internal.IpAddressRatedEventListener;
 
 /**
  * The OLAF application.
@@ -45,15 +36,12 @@ public class Olaf {
 			new PartnerSite("marktplaats", Country.NL, PartnerSiteType.GENERAL_CLASSIFIED, PartnerNotifierType.REST, URI.create("http://localhost:8080/olaf_rest_service")),
 			new PartnerSite("annunci", Country.IT, PartnerSiteType.GENERAL_CLASSIFIED, PartnerNotifierType.REST, URI.create("http://localhost:8080/olaf_rest_service")));//
 	
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private final IpAddressUsageNotificationService ipAddressUsageNotificationService;
 	
 	private final PartnersNotificationService partnersNotificationService;
 	
-	private final ExecutorService executorService = Executors.newCachedThreadPool();
-	
-	private volatile boolean run = true;
+	private OlafUdpServer server;  
 	
 	public static void main(String[] args) throws IOException {
 		Olaf olaf = new Olaf();
@@ -105,36 +93,19 @@ public class Olaf {
 		IpAddressUsedForPostingInDifferentCountriesEventListener.register(epServiceProvider);
 	}
 	
-	int numMessages;
+	
 	/**
 	 * Starts the service.
 	 * 
 	 * @throws IOException
 	 */
 	public void start() throws IOException {
-		/*
-		 * This is subject to change. The communication interface is about
-		 * to be designed and implemented by Alex.
-		 * 
-		 * This here is only temporarily.
-		 */
-		
-		DatagramSocket socket = new DatagramSocket(5555);
-		
-		while (run) {
-			DatagramPacket packet = new DatagramPacket( new byte[256], 256);
-			socket.receive(packet);
-			numMessages += 1;
-			logger.info("got {} messages so far", numMessages);
-			RemoteEventNotificationWorker notificationWorker = new RemoteEventNotificationWorker(packet, ipAddressUsageNotificationService);
-			executorService.execute(notificationWorker);
-		}
+		server = new OlafUdpServer(5555, ipAddressUsageNotificationService);
 	}
 	
 	
-	public void stop(){
-		run = false;
-		executorService.shutdown();
+	public void stop() {
+	    server.close();
 		partnersNotificationService.shutdown();
 	}
 	

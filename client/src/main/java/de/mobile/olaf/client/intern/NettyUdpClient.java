@@ -47,6 +47,7 @@ public class NettyUdpClient implements Closeable {
     }
 
     public void sendMessage(final byte[] buf) {
+        System.out.println("sending... " + new String(buf));
         channel.write(buf, address);
     }
 
