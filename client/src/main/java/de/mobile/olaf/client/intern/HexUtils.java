@@ -1,24 +1,22 @@
-package de.mobile.olaf.client.util;
+package de.mobile.olaf.client.intern;
 
+final class HexUtils {
 
-public final class HexUtils {
-    
-    
-    private static final char[] HEX_DIGITS = {
-        '0', '1', '2', '3', '4', '5', '6', '7',
-        '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+    private static final char[] HEX_DIGITS = { //
+        '0', '1', '2', '3', '4', '5', '6', '7', //
+        '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' //
     };
-    
-    private static final byte[] DIGITS = {
-         0,  1,  2,  3,  4,  5,  6, 7, 8, 9,
-        -1, -1, -1, -1, -1, -1, -1,
-        10, 11, 12, 13, 14, 15, // 'A' ... 'F'
-        -1, -1, -1, -1, -1, -1, -1, -1, -1,
-        -1, -1, -1, -1, -1, -1, -1, -1, -1,
-        -1, -1, -1, -1, -1, -1, -1, -1,
-        10, 11, 12, 13, 14, 15,  // 'a' - 'f'
+
+    private static final byte[] DIGITS = { //
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, //
+            -1, -1, -1, -1, -1, -1, -1, //
+            10, 11, 12, 13, 14, 15, // 'A' ... 'F'
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, //
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, //
+            -1, -1, -1, -1, -1, -1, -1, -1, //
+            10, 11, 12, 13, 14, 15, // 'a' - 'f'
     };
-    
+
     private HexUtils() {
     }
 
@@ -39,13 +37,13 @@ public final class HexUtils {
         }
         return new String(cArray, 0, j);
     }
-    
+
     public static byte[] toBytes(String hex) {
         while (hex.length() > 2 && hex.charAt(0) == '0' && hex.charAt(1) == '0') {
             hex = hex.substring(2); // trim leading zeros
         }
         if (hex.length() % 2 != 0) {
-           hex = "0" + hex;
+            hex = "0" + hex;
         }
         final int length = hex.length();
         boolean badHex = false;
@@ -84,5 +82,5 @@ public final class HexUtils {
         return out;
 
     }
-    
+
 }

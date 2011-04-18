@@ -21,41 +21,43 @@ import org.jboss.netty.channel.ExceptionEvent;
 
 public class NettyUdpClient implements Closeable {
 
-	final DatagramChannelFactory factory;
-	final DatagramChannel channel;
-	final InetSocketAddress address;
-	
-	public NettyUdpClient(String host, int port) {
-		address =  new InetSocketAddress(host, port);
-		factory = new NioDatagramChannelFactory(Executors.newCachedThreadPool());
-		ConnectionlessBootstrap b = new ConnectionlessBootstrap(factory);
-		b.setPipelineFactory(new ChannelPipelineFactory() {
-			public ChannelPipeline getPipeline() throws Exception {
-				return Channels.pipeline(
-						new ByteBufferEncoder(),
-						new SimpleChannelUpstreamHandler() {
-							public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-								Logger.getLogger(getClass().getName()).info(e.toString());
-							};
-						}
-				);
-			}
-		});
-		channel = (DatagramChannel) b.bind(new InetSocketAddress(0));
-	}
-	
-	public void sendMessage(final byte[] buf) {
-		channel.write(buf, address);
-	}
-	
-	public void close() {
-		channel.close().awaitUninterruptibly();
-		factory.releaseExternalResources();
-	}
-	
-	static class ByteBufferEncoder extends OneToOneEncoder {
-		protected Object encode(ChannelHandlerContext context, Channel channel, Object obj) throws Exception {
-			return ChannelBuffers.wrappedBuffer((byte[]) obj);
-		}
-	}
+    final DatagramChannelFactory factory;
+    final DatagramChannel channel;
+    final InetSocketAddress address;
+
+    public NettyUdpClient(String host, int port) {
+        address = new InetSocketAddress(host, port);
+        factory = new NioDatagramChannelFactory(Executors.newCachedThreadPool());
+        ConnectionlessBootstrap b = new ConnectionlessBootstrap(factory);
+        b.setPipelineFactory(new ChannelPipelineFactory() {
+            public ChannelPipeline getPipeline() throws Exception {
+                return Channels.pipeline(new ByteBufferEncoder(),
+                        new SimpleChannelUpstreamHandler() {
+                            public void exceptionCaught(
+                                    ChannelHandlerContext ctx, ExceptionEvent e)
+                                    throws Exception {
+                                Logger.getLogger(getClass().getName()).info(
+                                        e.toString());
+                            };
+                        });
+            }
+        });
+        channel = (DatagramChannel) b.bind(new InetSocketAddress(0));
+    }
+
+    public void sendMessage(final byte[] buf) {
+        channel.write(buf, address);
+    }
+
+    public void close() {
+        channel.close().awaitUninterruptibly();
+        factory.releaseExternalResources();
+    }
+
+    static class ByteBufferEncoder extends OneToOneEncoder {
+        protected Object encode(ChannelHandlerContext context, Channel channel,
+                Object obj) throws Exception {
+            return ChannelBuffers.wrappedBuffer((byte[]) obj);
+        }
+    }
 }
