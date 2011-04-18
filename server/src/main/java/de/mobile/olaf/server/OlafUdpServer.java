@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.netty.bootstrap.ConnectionlessBootstrap;
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
@@ -45,7 +46,7 @@ public class OlafUdpServer {
     class ServerHandler extends SimpleChannelUpstreamHandler {
         @Override
         public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-            Message msg = Message.fromBytes((byte[])e.getMessage());
+            Message msg = Message.fromBytes((byte[]) e.getMessage());
             ipAddressUsageNotificationService.notify(
                     new Ip4Address(msg.getIp()),
                     Olaf.ipAddress2SiteMap.get(msg.getClientId()),//
@@ -60,8 +61,11 @@ public class OlafUdpServer {
     
     static class ByteBufferDecoder extends OneToOneDecoder {
         @Override
-        protected Object decode(ChannelHandlerContext ctx, Channel channel, Object obj) throws Exception {
-            return ChannelBuffers.wrappedBuffer((byte[]) obj);
+        protected Object decode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
+            if (!(msg instanceof ChannelBuffer)) {
+                return msg;
+            }
+            return((ChannelBuffer) msg).array();
         }
     }
     
