@@ -9,16 +9,17 @@ import java.util.concurrent.TimeUnit;
 import de.mobile.olaf.api.IpUsedEventType;
 import de.mobile.olaf.api.Message;
 import de.mobile.olaf.client.intern.HexUtils;
+import de.mobile.olaf.client.intern.NettyTcpClient;
 import de.mobile.olaf.client.intern.NettyUdpClient;
 
 public class Client implements Closeable {
 
-    final NettyUdpClient endpoint;
+    final NettyTcpClient endpoint;
 
     final int clientId;
 
     public Client(String host, int port, int clientId) {
-        this.endpoint = new NettyUdpClient(host, port);
+        this.endpoint = new NettyTcpClient(host, port);
         this.clientId = clientId;
     }
 
@@ -50,21 +51,22 @@ public class Client implements Closeable {
                 .getUserInfo());
 
         Client client = new Client(uri.getHost(), uri.getPort(), clientId);
-        try {
-            BufferedReader reader = new BufferedReader(
-                (new InputStreamReader(System.in)));
-            String line;
-        
-            while ((line = reader.readLine()) != null) {
-                client.sendMessage(line, IpUsedEventType.USE);
-            }
-            TimeUnit.SECONDS.sleep(30);
-        } finally {
-            client.close();
-        }
-//        for (long l = 0; l <= 0xffffffL; l++) {
-//            client.sendMessage((int)l , IpUsedEventType.USE);
+//        try {
+//            BufferedReader reader = new BufferedReader(
+//                (new InputStreamReader(System.in)));
+//            String line;
+//        
+//            while ((line = reader.readLine()) != null) {
+//                client.sendMessage(line, IpUsedEventType.USE);
+//            }
+//            TimeUnit.SECONDS.sleep(30);
+//        } finally {
+//            client.close();
 //        }
-//        client.close();
+        for (long l = 0; l <= 0xffffL; l++) {
+            client.sendMessage((int)l , IpUsedEventType.USE);
+        }
+        TimeUnit.SECONDS.sleep(10);
+        client.close();
     }
 }

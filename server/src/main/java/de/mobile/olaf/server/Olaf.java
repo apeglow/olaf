@@ -41,7 +41,7 @@ public class Olaf {
 	
 	private final PartnersNotificationService partnersNotificationService;
 	
-	private OlafUdpServer server;  
+	private OlafTcpServer server;  
 	
 	public static void main(String[] args) throws IOException {
 		Olaf olaf = new Olaf();
@@ -100,7 +100,7 @@ public class Olaf {
 	 * @throws IOException
 	 */
 	public void start() throws IOException {
-		server = new OlafUdpServer(5555, ipAddressUsageNotificationService);
+		server = new OlafTcpServer(5555, ipAddressUsageNotificationService);
 	}
 	
 	
