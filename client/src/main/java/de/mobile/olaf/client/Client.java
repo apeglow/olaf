@@ -40,13 +40,16 @@ public class Client implements Closeable {
                 .getUserInfo());
 
         Client client = new Client(uri.getHost(), uri.getPort(), clientId);
-        BufferedReader reader = new BufferedReader((new InputStreamReader(
-                System.in)));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            client.sendMessage(line, IpUsedEventType.USE);
+        try {
+            BufferedReader reader = new BufferedReader(
+                (new InputStreamReader(System.in)));
+            String line;
+        
+            while ((line = reader.readLine()) != null) {
+                client.sendMessage(line, IpUsedEventType.USE);
+            }
+        } finally {
+            client.close();
         }
-        client.close();
     }
-
 }
