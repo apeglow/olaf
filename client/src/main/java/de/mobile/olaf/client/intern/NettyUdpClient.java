@@ -3,6 +3,7 @@ package de.mobile.olaf.client.intern;
 import java.io.Closeable;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.jboss.netty.bootstrap.ConnectionlessBootstrap;
@@ -50,7 +51,7 @@ public class NettyUdpClient implements Closeable {
     }
 
     public void close() {
-        channel.close().awaitUninterruptibly();
+        channel.close().awaitUninterruptibly(30, TimeUnit.SECONDS);
         factory.releaseExternalResources();
     }
 
