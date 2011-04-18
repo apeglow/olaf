@@ -2,12 +2,13 @@ package de.mobile.olaf.client;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
 import de.mobile.olaf.api.IpUsedEventType;
 import de.mobile.olaf.api.Message;
+import de.mobile.olaf.client.intern.HexUtils;
 import de.mobile.olaf.client.intern.NettyUdpClient;
 
 public class Client implements Closeable {
@@ -43,7 +44,7 @@ public class Client implements Closeable {
         endpoint.close();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         URI uri = URI.create(args.length < 1 ? "//1@localhost:5555" : args[0]);
         int clientId = uri.getUserInfo() == null ? 1 : Integer.parseInt(uri
                 .getUserInfo());
@@ -57,6 +58,7 @@ public class Client implements Closeable {
             while ((line = reader.readLine()) != null) {
                 client.sendMessage(line, IpUsedEventType.USE);
             }
+            TimeUnit.SECONDS.sleep(30);
         } finally {
             client.close();
         }
