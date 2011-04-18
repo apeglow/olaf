@@ -46,11 +46,10 @@ public class OlafUdpServer {
         @Override
         public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
             Message msg = Message.fromBytes((byte[]) e.getMessage());
-            System.out.println(msg);
-//            ipAddressUsageNotificationService.notify(
-//                    new Ip4Address(msg.getIp()),
-//                    Olaf.ipAddress2SiteMap.get(msg.getClientId()),//
-//                    IpUsedEventType.values()[msg.getEventId()]);
+            ipAddressUsageNotificationService.notify(
+                    new Ip4Address(msg.getIp()),
+                    Olaf.ipAddress2SiteMap.get(msg.getClientId()),//
+                    IpUsedEventType.values()[msg.getEventId()]);
         }
     }
     
