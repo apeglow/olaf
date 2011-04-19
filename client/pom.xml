@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>de.mobile.olaf</groupId>
     <artifactId>parent</artifactId>
     <version>1</version>
   </parent>
-
   <groupId>de.mobile.olaf</groupId>
   <artifactId>olaf-client</artifactId>
   <version>0.1</version>
   <name>${project.artifactId}</name>
-
   <description>Olaf Client</description>
-
   <packaging>jar</packaging>
-
   <build>
     <plugins>
       <plugin>
@@ -25,6 +20,27 @@
         <configuration>
           <goals>clean deploy</goals>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependencies-to-jarjar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>de.mobile.olaf</groupId>
+                  <artifactId>olaf-api</artifactId>
+                  <version>0.1</version>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -48,12 +64,12 @@
               <tasks>
                 <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpathref="maven.compile.classpath"/>
                 <jarjar destfile="${project.build.directory}/${project.build.finalName}.jar" update="true">
-                    <!-- netty rewrite -->
-                    <zipfileset src="${project.basedir}/lib/netty-3.2.4.jar"/>
-                    <rule pattern="org.jboss.**" result="intern.olaf.@1"/>
-                    <!-- olaf-api no rewrite -->
-                    <zipfileset src="${project.basedir}/lib/olaf-api.jar" />
-		</jarjar>
+                  <!-- netty rewrite -->
+                  <zipfileset src="${project.basedir}/lib/netty-3.2.4.jar"/>
+                  <rule pattern="org.jboss.**" result="intern.olaf.@1"/>
+                  <!-- olaf-api no rewrite -->
+                  <zipfileset src="${project.build.directory}/dependency/olaf-api-0.1.jar"/>
+                </jarjar>
               </tasks>
             </configuration>
           </execution>
@@ -61,19 +77,11 @@
       </plugin>
     </plugins>
   </build>
-  <!--
-    <scm>
-        <connection>scm:git:git@git.corp.mobile.de:mobile-platform/${project.artifactId}.git</connection>
-        <developerConnection>scm:git:git@git.corp.mobile.de:mobile-platform/${project.artifactId}.git</developerConnection>
-    </scm>
--->
   <dependencies>
     <dependency>
       <groupId>de.mobile.olaf</groupId>
       <artifactId>olaf-api</artifactId>
       <version>0.1</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/olaf-api.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>org.jboss.netty</groupId>
