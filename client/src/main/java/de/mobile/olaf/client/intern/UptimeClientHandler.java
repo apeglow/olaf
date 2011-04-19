@@ -3,6 +3,7 @@ package de.mobile.olaf.client.intern;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
@@ -14,7 +15,7 @@ import org.jboss.netty.util.Timeout;
 import org.jboss.netty.util.Timer;
 import org.jboss.netty.util.TimerTask;
 
-public class UptimeClientHandler extends SimpleChannelHandler {
+class UptimeClientHandler extends SimpleChannelHandler {
 
     /* Reconnect delay in seconds. */
     private static final long RECONNECT_DELAY = 5;
@@ -25,7 +26,7 @@ public class UptimeClientHandler extends SimpleChannelHandler {
     private Channel channel;
     
 
-    public UptimeClientHandler(ClientBootstrap bootstrap, InetSocketAddress address, Timer timer) {
+    UptimeClientHandler(ClientBootstrap bootstrap, InetSocketAddress address, Timer timer) {
         this.bootstrap = bootstrap;
         this.timer = timer;
         this.address = address;
@@ -42,7 +43,7 @@ public class UptimeClientHandler extends SimpleChannelHandler {
         timer.newTimeout(new TimerTask() {
             public void run(Timeout timeout) throws Exception {
                 println("Reconnecting");
-                setChannel(bootstrap.connect(address).getChannel());
+                bootstrap.connect(address).getChannel();
             }
         }, RECONNECT_DELAY, TimeUnit.SECONDS);
     }
@@ -53,7 +54,7 @@ public class UptimeClientHandler extends SimpleChannelHandler {
             startTime = System.currentTimeMillis();
         }
         setChannel(ctx.getChannel());
-        println("Connected");
+        println("Connected " + channel);
     }
 
     @Override
@@ -64,14 +65,15 @@ public class UptimeClientHandler extends SimpleChannelHandler {
             println("Failed to connect: " + cause.getMessage());
         }
         ctx.getChannel().close();
-        setChannel(null);
     }
 
+    private final Logger logger = Logger.getLogger("olaf.client");
+    
     void println(String msg) {
         if (startTime < 0) {
-            System.err.format("[SERVER IS DOWN] %s%n", msg);
+            logger.warning("[SERVER IS DOWN] " + msg);
         } else {
-            System.err.format("[UPTIME: %5ds] %s%n", (System.currentTimeMillis() - startTime) / 1000, msg);
+            logger.info(String.format("[UPTIME: %5ds] %s", (System.currentTimeMillis() - startTime) / 1000, msg));
         }
     }
     

@@ -1,8 +1,6 @@
 package de.mobile.olaf.client;
 
-import java.io.BufferedReader;
 import java.io.Closeable;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
@@ -35,27 +33,15 @@ public class Client implements Closeable {
     }
 
     public static void main(String[] args) throws Exception {
-        URI uri = URI.create(args.length < 1 ? "tcp://0@localhost:5555" : args[0]);
-        int clientId = uri.getUserInfo() == null ? 1 : Integer.parseInt(uri
-                .getUserInfo());
-
+        URI uri = URI.create(args.length < 1 
+                ? "tcp://0@localhost:5555" 
+                : args[0]);
+        int clientId = uri.getUserInfo() == null 
+            ? 1 
+            : Integer.parseInt(uri.getUserInfo());
         Client client = new Client(uri.getHost(), uri.getPort(), clientId);
-        try {
-            BufferedReader reader = new BufferedReader(
-                (new InputStreamReader(System.in)));
-            String line;
-        
-            while ((line = reader.readLine()) != null) {
-                client.sendMessage(line, IpUsedEventType.USE);
-            }
-            TimeUnit.SECONDS.sleep(30);
-        } finally {
-            client.close();
-        }
-        
-//        for (;;) {
-//            client.sendMessage("127.0.0.1", IpUsedEventType.USE);
-//            TimeUnit.MILLISECONDS.sleep(10);
-//        }
+        client.sendMessage("127.0.0.1", IpUsedEventType.USE);
+        TimeUnit.MILLISECONDS.sleep(10);
+        //client.close();
     }
 }
