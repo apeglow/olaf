@@ -8,9 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import de.mobile.olaf.api.IpUsedEventType;
 import de.mobile.olaf.api.Message;
-import de.mobile.olaf.client.intern.HexUtils;
 import de.mobile.olaf.client.intern.NettyTcpClient;
-import de.mobile.olaf.client.intern.NettyUdpClient;
 
 public class Client implements Closeable {
 
@@ -32,41 +30,32 @@ public class Client implements Closeable {
         endpoint.sendMessage(msg.asBytes());
     }
     
-    public void sendMessage(int ip, IpUsedEventType type) {
-        Message msg = new Message.Builder() //
-            .setIp(ip) //
-            .setEventId(type.ordinal()) //
-            .setClientId(clientId) //
-            .setTime(System.currentTimeMillis()).build();
-        endpoint.sendMessage(msg.asBytes());
-    }
-
     public void close() {
         endpoint.close();
     }
 
     public static void main(String[] args) throws Exception {
-        URI uri = URI.create(args.length < 1 ? "//1@localhost:5555" : args[0]);
+        URI uri = URI.create(args.length < 1 ? "tcp://0@localhost:5555" : args[0]);
         int clientId = uri.getUserInfo() == null ? 1 : Integer.parseInt(uri
                 .getUserInfo());
 
         Client client = new Client(uri.getHost(), uri.getPort(), clientId);
-//        try {
-//            BufferedReader reader = new BufferedReader(
-//                (new InputStreamReader(System.in)));
-//            String line;
-//        
-//            while ((line = reader.readLine()) != null) {
-//                client.sendMessage(line, IpUsedEventType.USE);
-//            }
-//            TimeUnit.SECONDS.sleep(30);
-//        } finally {
-//            client.close();
-//        }
-        for (long l = 0; l <= 0xffffL; l++) {
-            client.sendMessage((int)l , IpUsedEventType.USE);
+        try {
+            BufferedReader reader = new BufferedReader(
+                (new InputStreamReader(System.in)));
+            String line;
+        
+            while ((line = reader.readLine()) != null) {
+                client.sendMessage(line, IpUsedEventType.USE);
+            }
+            TimeUnit.SECONDS.sleep(30);
+        } finally {
+            client.close();
         }
-        TimeUnit.SECONDS.sleep(10);
-        client.close();
+        
+//        for (;;) {
+//            client.sendMessage("127.0.0.1", IpUsedEventType.USE);
+//            TimeUnit.MILLISECONDS.sleep(10);
+//        }
     }
 }
