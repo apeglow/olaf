@@ -6,8 +6,11 @@ import com.espertech.esper.client.EventBean;
 
 import de.mobile.olaf.api.IpAddressStatus;
 import de.mobile.olaf.server.domain.RatedIpAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IpAddressUpdateUtil {
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * Updates the status respecting the relations between the status types.
@@ -37,6 +40,7 @@ public class IpAddressUpdateUtil {
 						ratedIpAddress.setStatus(status);
 						// store new ip status
 						epServiceProvider.getEPRuntime().sendEvent(ratedIpAddress);
+						logger.info("Set status of ip {} to {}.", ipAddress, status);
 					}
 				}
 			}
