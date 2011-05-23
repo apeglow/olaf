@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class IpAddressUpdateUtil {
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final static Logger logger = LoggerFactory.getLogger(IpAddressUpdateUtil.class);
 	
 	/**
 	 * Updates the status respecting the relations between the status types.
