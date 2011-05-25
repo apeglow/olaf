@@ -22,9 +22,9 @@
     	<property name="commandClass" value="de.mobile.olaf.webapp.support.soy.Contact" />
     </bean>
     
-    <bean id="olafClient" class="de.mobile.olaf.client.Client">
+    <bean id="olafClient" class="de.mobile.olaf.client.Client" destroy-method="close">
     	<constructor-arg value="olaf47-1" />
-    	<constructor-arg value="55555" />
+    	<constructor-arg value="5555" />
     	<constructor-arg value="1" />
     </bean>
 
