@@ -111,4 +111,17 @@
 
     </dependencies>
     
+    <repositories>
+    	<repository>
+        	<id>nexus 3rd party</id>
+                <url>https://ci.corp.mobile.de/nexus/content/repositories/hosted-3rd-party-releases</url>
+         </repository>
+
+    	<repository>
+        	<id>nexus mobile releases</id>
+                <url>https://ci.corp.mobile.de/nexus/content/repositories/hosted-mobile-releases</url>
+         </repository>         
+         
+    </repositories>
+    
 </project>
