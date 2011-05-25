@@ -2,6 +2,7 @@ build
 .metadata
 .project
 .classpath
+.settings
 bin
 *~
 target/
