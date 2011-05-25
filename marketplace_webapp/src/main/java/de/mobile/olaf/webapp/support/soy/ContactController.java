@@ -15,17 +15,24 @@ import de.mobile.olaf.client.Client;
 
 public class ContactController extends AbstractFormController {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final Client olafClient;
+	private final Client mobileOlafClient;
+	private final Client marktplaatsOlafClient;
 	
-	public ContactController(Client olafClient) {
-		this.olafClient = olafClient;
+	public ContactController(Client mobileOlafClient, Client marktplaatsOlafClient) {
+		this.mobileOlafClient = mobileOlafClient;
+		this.marktplaatsOlafClient = marktplaatsOlafClient;
 	}
 
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 		String ip = request.getRemoteAddr();
 		if (ip != null) {
-			olafClient.sendMessage(ip, IpUsedEventType.CONTACT);
+			Contact contact = (Contact)command;
+			if (contact.getMarketplace().equals(0)) {
+				mobileOlafClient.sendMessage(ip, IpUsedEventType.CONTACT);
+			} else {
+				marktplaatsOlafClient.sendMessage(ip, IpUsedEventType.CONTACT);
+			}
 		}
 		logger.info("Sent ip {} to olaf.", ip);
 		return new ModelAndView(new RedirectView("contact.html"));
