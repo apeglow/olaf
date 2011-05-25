@@ -21,7 +21,7 @@ public class IpAddressUpdateUtil {
 	 */
 	
 	public static void update(String ipAddress, IpAddressStatus status, EPServiceProvider epServiceProvider){
-		String query = "select * from RatedIpAddressWindow where address=' " + ipAddress + "'";
+		String query = "select * from RatedIpAddressWindow where address='" + ipAddress + "'";
 		EPOnDemandQueryResult result = epServiceProvider.getEPRuntime().executeQuery(query);
 		EventBean[] ratedIpAddressEventBeans = result.getArray();
 		
@@ -29,6 +29,7 @@ public class IpAddressUpdateUtil {
 			RatedIpAddress ratedIpAddress = new RatedIpAddress(ipAddress, status);
 			// store new ip status
 			epServiceProvider.getEPRuntime().sendEvent(ratedIpAddress);
+			logger.info("Set status of ip {} to {}.", ipAddress, status);
 		} else {
 			for (EventBean ratedIpAddressEventBean: ratedIpAddressEventBeans){
 				RatedIpAddress ratedIpAddress = (RatedIpAddress)ratedIpAddressEventBean.getUnderlying();
@@ -37,10 +38,10 @@ public class IpAddressUpdateUtil {
 					 * either the status gets 'up' or the new status is FRAUD 
 					 */
 					if (ratedIpAddress.getStatus().compareTo(status)<0 || status == IpAddressStatus.USED_FOR_FRAUD) {
-						logger.info("Set status of ip {} to {}.", ipAddress, status);
 						ratedIpAddress.setStatus(status);
 						// store new ip status
 						epServiceProvider.getEPRuntime().sendEvent(ratedIpAddress);
+						logger.info("Set status of ip {} to {}.", ipAddress, status);
 						
 					}
 				}

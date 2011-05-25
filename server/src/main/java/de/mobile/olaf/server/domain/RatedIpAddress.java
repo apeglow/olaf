@@ -2,7 +2,6 @@ package de.mobile.olaf.server.domain;
 
 import java.net.InetAddress;
 
-import de.mobile.common.domain.Ip4Address;
 import de.mobile.olaf.api.IpAddressStatus;
 
 /**
@@ -17,17 +16,14 @@ public class RatedIpAddress {
 
 	public static final String STATUS_PROP_NAME = "status";
 
-	private final Ip4Address address;
+	private String address;
 
 	private IpAddressStatus status;
 	
-	public RatedIpAddress(Ip4Address ipAddress, IpAddressStatus status){
-		this.address = ipAddress;
-		this.status = status;
-	}
 	
 	public RatedIpAddress(String ipAddress, IpAddressStatus status){
-		this(Ip4Address.fromString(ipAddress), status);
+		this.address = ipAddress;
+		this.status = status;
 	}
 	
 	/**
