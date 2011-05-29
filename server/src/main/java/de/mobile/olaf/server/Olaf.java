@@ -19,6 +19,7 @@ import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedForContac
 import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedForContactInDifferentCountriesEventListener;
 import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedForPostingInDifferentCountriesEventListener;
 import de.mobile.olaf.server.esper.eventlistener.external.IpAddressUsedInDifferentCountriesEventListener;
+import de.mobile.olaf.server.esper.eventlistener.internal.IpAddressRatedEventListener;
 
 
 /**
@@ -46,7 +47,7 @@ public class Olaf {
 
     private OlafTcpServer server;
 
-    private OlafWebsocketServer websocketServer;
+    private final OlafWebsocketServer websocketServer;
 
     public static void main(String[] args) {
         Olaf olaf = new Olaf();
@@ -54,6 +55,9 @@ public class Olaf {
     }
 
     public Olaf() {
+
+        websocketServer = new OlafWebsocketServer(ipAddress2SiteMap);
+
         EPServiceProvider epServiceProvider = EPServiceProviderManager.getDefaultProvider();
         partnersNotificationService = new PartnersNotificationService(ipAddress2SiteMap);
         ipAddressUsageNotificationService = new IpAddressUsageNotificationService(epServiceProvider);
@@ -68,10 +72,14 @@ public class Olaf {
                 .getEPAdministrator() //
                 .createEPL("insert into RatedIpAddressWindow select * from " + RatedIpAddress.class.getName());
 
+        // ---------------------------------
+
         /*
          * listen to ip address rated events
          */
-        // IpAddressRatedEventListener.register(epServiceProvider, partnersNotificationService);
+        IpAddressRatedEventListener.register(epServiceProvider, partnersNotificationService, websocketServer);
+
+        // ---------------------------------
 
         /*
          * Listen to ip usage in different countries events
@@ -106,8 +114,13 @@ public class Olaf {
      */
     public void start() {
         server = new OlafTcpServer(5555, ipAddressUsageNotificationService);
-        websocketServer = new OlafWebsocketServer();
     }
+
+    // public void createDummyEvent() {
+    // EPServiceProvider epServiceProvider = EPServiceProviderManager.getDefaultProvider();
+    // for (int i = 0; i < 30; i++)
+    // IpAddressUpdateUtil.update(i + ".1.1." + i, IpAddressStatus.SUSPICIOUS, epServiceProvider);
+    // }
 
     public void stop() {
         server.close();

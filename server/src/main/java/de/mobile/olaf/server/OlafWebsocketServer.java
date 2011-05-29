@@ -20,6 +20,10 @@ import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 import java.net.InetSocketAddress;
 import java.security.MessageDigest;
+import java.util.Collections;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -51,6 +55,9 @@ import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
 import org.jboss.netty.util.CharsetUtil;
 
+import de.mobile.olaf.server.communication.out.websocket.WebsocketMessage;
+import de.mobile.olaf.server.domain.PartnerSite;
+
 
 /**
  * Call Websocket server by: ws://localhost:8012/websocket
@@ -62,19 +69,27 @@ public class OlafWebsocketServer extends SimpleChannelUpstreamHandler {
 
     private final Channel channel;
 
+    private final List<PartnerSite> ipaddress2sitemap;
+
     private static final String WEBSOCKET_PATH = "/websocket";
 
-    // public static void main(String[] args) {
-    //
-    // OlafWebsocketServer ws = new OlafWebsocketServer();
-    //
-    // }
+    // -----------------
+
+    private volatile Queue<WebsocketMessage> eventMessages = new ConcurrentLinkedQueue<WebsocketMessage>();
+
+    public void addEventMessage(WebsocketMessage lastEventMessage) {
+        if (eventMessages.size() > 10000) eventMessages.clear();
+        eventMessages.offer(lastEventMessage);
+    }
+
+    // -----------------
 
     public void close() {
         channel.close().awaitUninterruptibly(30, TimeUnit.SECONDS);
     }
 
-    public OlafWebsocketServer() {
+    public OlafWebsocketServer(List<PartnerSite> ipaddress2sitemap) {
+        this.ipaddress2sitemap = Collections.unmodifiableList(ipaddress2sitemap);
 
         // Configure the server.
         ServerBootstrap bootstrap = new ServerBootstrap(new NioServerSocketChannelFactory(
@@ -101,9 +116,42 @@ public class OlafWebsocketServer extends SimpleChannelUpstreamHandler {
         if (msg instanceof HttpRequest) {
             handleHttpRequest(ctx, (HttpRequest) msg);
         } else if (msg instanceof WebSocketFrame) {
-            handleWebSocketFrame(ctx, (WebSocketFrame) msg);
+            dispatchWebsocketRequest(ctx, (WebSocketFrame) msg);
         }
     }
+
+    // ------------------------------------------------------------------
+
+    private WebsocketMessage handlePartnerListRequest() {
+        StringBuilder body = new StringBuilder();
+        for (PartnerSite p : ipaddress2sitemap)
+            body.append(p.getName()).append(",");
+        WebsocketMessage wm = new WebsocketMessage();
+        wm.setHeader("List of registered Partners");
+        wm.setBody(body.substring(0, body.length() - 1));
+        wm.setType("PARTNER-LIST");
+        return wm;
+    }
+
+    private WebsocketMessage handleIpEventRequest() {
+        return eventMessages.poll();
+    }
+
+    private void dispatchWebsocketRequest(ChannelHandlerContext ctx, WebSocketFrame frame) {
+        WebsocketMessage wsRequest = WebsocketMessage.unmarshallFromJson(frame.getTextData());
+        WebsocketMessage wsResponse = null;
+        if (wsRequest.getType().equalsIgnoreCase("PARTNER-LIST")) {
+            wsResponse = handlePartnerListRequest();
+        }
+        if (wsRequest.getType().equalsIgnoreCase("IP-EVENT-REQUEST")) {
+            wsResponse = handleIpEventRequest();
+        }
+        if (wsResponse != null) {
+            ctx.getChannel().write(new DefaultWebSocketFrame(WebsocketMessage.marshallToJson(wsResponse)));
+        }
+    }
+
+    // ------------------------------------------------------------------
 
     private void handleHttpRequest(ChannelHandlerContext ctx, HttpRequest req) throws Exception {
         // Allow only GET methods.
@@ -170,15 +218,6 @@ public class OlafWebsocketServer extends SimpleChannelUpstreamHandler {
         sendHttpResponse(ctx, req, new DefaultHttpResponse(HTTP_1_1, FORBIDDEN));
     }
 
-    // ****************************************
-    // TODO: NOW ONLY ECHO + UPPERCASE, send sensefull events :)
-    // ****************************************
-
-    private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
-        // Send the uppercased string back.
-        ctx.getChannel().write(new DefaultWebSocketFrame(frame.getTextData().toUpperCase()));
-    }
-
     private void sendHttpResponse(ChannelHandlerContext ctx, HttpRequest req, HttpResponse res) {
         // Generate an error page if response status code is not OK (200).
         if (res.getStatus().getCode() != 200) {
@@ -202,4 +241,5 @@ public class OlafWebsocketServer extends SimpleChannelUpstreamHandler {
     private String getWebSocketLocation(HttpRequest req) {
         return "ws://" + req.getHeader(HttpHeaders.Names.HOST) + WEBSOCKET_PATH;
     }
+
 }

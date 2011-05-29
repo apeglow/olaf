@@ -6,26 +6,22 @@
 
 <style>
 
-	.clientMarketplace {
-		border:solid black 1px;
-		border-radius:10px;
-		position:relative;
-		float: left;
-		margin-right: 10px;
-		padding:0px;
-		padding-bottom:10px;
+	#olafServerEvents {
+			border:solid black 1px;
+			border-radius:10px;
+			position:relative;
+			margin-right: 10px;
+			padding:0px;
+			padding:10px 0 10px 0;
+			overflow: auto;
+			width: 800px;
+			height:500px;	
 	}
 
-	.clientMarketplace h2 {
-		padding-left:5px;
+	#clientMarketplaces {
+		font-weight:bold;
+		margin-left:20px;	
 	}
-
-	.clientMarketplace div {
-		overflow: auto;
-		width: 300px;
-		height:500px;
-	}
-
 
 	ul {
 		list-style: none;
@@ -40,52 +36,95 @@
 		border-bottom:1px solid white;
 	}
 
-    li.spamEvent {
+    	li.spamEvent {
 		background-color: red;
 		color:white;
 	}
-    li.contactEvent {
+    	li.contactEvent {
 		background-color: grey;
 		color:white;
 	}
 
 
-/* ------------------ */
+	/* ------------------ */
 
-.connected {
-	background-color:green;
-	color:white;
-	font-weight:bold;
-}
+	.connected {
+		background-color:green;
+		color:white;
+		font-weight:bold;
+	}
 
-.disconnected {
-	background-color:red;
-	color:white;
-	font-weight:bold;
-}
+	.disconnected {
+		background-color:red;
+		color:white;
+		font-weight:bold;
+	}
 
 
-section#intro {
-margin:20px 0 20px 0 ;
-}
+	section#intro {
+		margin:20px 0 20px 0 ;
+	}
 
 </style>
 
 
 <script>
 
-var websocketUri = "ws://echo.websocket.org/";
+var websocketUri = "ws://localhost:8014/websocket";
 var websocket;
 
 
 // -------------------------------------------
 
-function addOlafEvent(clientId, eventText, eventType) {
 
-console.log(clientId, eventText, eventType);
+/*
+	Messsage Bean for communication from and to OLAF Server
+*/
+function OlafWebsocketMessage(type) {
+	this.type=type;
+	this.header = "";
+	this.body="";
+	this.marshallToJson = function() {
+		return JSON.stringify(this);
+	}
+}
 
-	var h = '<li class="' + eventType + '">' + eventText + '</li>\n' + $("#" + clientId + " .events").html();
-	$("#" + clientId + " .events").html(h);
+function dispatchEvent(eventData) {
+	var jsonMessage = jQuery.parseJSON(eventData);
+	if(jsonMessage.type=='PARTNER-LIST') {
+		addMarketplaces(jsonMessage.body);
+	}
+	if(jsonMessage.type=='IP-RATING') {
+		addIpEvent(jsonMessage);
+	}
+}
+
+// -------------------------------------------
+
+function addMarketplaces(marketplaceNamesAsCsv) {
+	$("#clientMarketplaces").empty();
+	$("#clientMarketplaces").html(marketplaceNamesAsCsv);
+}
+
+
+function addIpEvent(jsonMessage) {
+	console.log(jsonMessage);
+	var h='<li class="contactEvent">' + jsonMessage.type + ' - ' + jsonMessage.body  + '</li>';
+	console.log(h);
+	$("#olafServerEvents .events").prepend(h);
+
+}
+
+// -------------------------------------------
+
+// Pull from OLAF Server
+
+function checkForOlafEvents() {
+	websocket.send(new OlafWebsocketMessage("IP-EVENT-REQUEST").marshallToJson());
+}
+
+function checkForRegisteredMarketplaces() {
+	websocket.send(new OlafWebsocketMessage("PARTNER-LIST").marshallToJson());
 }
 
 // -------------------------------------------
@@ -102,13 +141,13 @@ function updateWebSocketConnection() {
 function initWebsocket() {
 
 	websocket.onmessage = function(evt) {
-		//alert("Response: " + evt.data);
 		console.log("Got Message: " + evt.data);
-		addOlafEvent(evt.data.split("|")[0],'TEST',evt.data.split("|")[1]);
+		dispatchEvent(evt.data);
 	};
 
 	websocket.onopen = function (evt) {
 		updateConnectStatus();
+		checkForRegisteredMarketplaces();
 	};
 
 	websocket.onerror=function(evt) {
@@ -157,23 +196,17 @@ function updateConnectStatus() {
 
 // -----------------------------------------
 
+
+
 $(document).ready(function() {
 
-	$(document).keyup(function(event) {
-	  if(event.keyCode == '13') {
+	$("#connect").click(function(event) {
 		updateWebSocketConnection();
 		return false;
-	  }
 	});
 
 	setInterval("updateConnectStatus()", 10000);
-
-
-	// dummy event generator
-	$("#tests button").click(function(event) {
-		websocket.send($(this).attr("event"));
-		return false;
-	});
+	setInterval("checkForOlafEvents()", 1000);
 
 });
 
@@ -187,72 +220,24 @@ $(document).ready(function() {
 
 <body>
 
-
-<div style="border:2px dashed black;">
-
-	Dummy ECHO Server Test
-	<p/>
-	<b>Use "ws://echo.websocket.org/" as ECHO Server Test URL</b><br />
-	Hit return in Server URL Field
-	<br />
-	When connected hit buttons for test echo websocket event
-
-	<p />
-	<div id="tests">
-		<table border="1">
-			<tr>
-				<td><button event="mobileDe|spamEvent">Mobile de Spam Event</button></td>
-				<td><button event="mobileDe|contactEvent">Mobile de Contact Event</button></td>
-			</tr>
-			<tr>
-				<td><button event="annunci|spamEvent">annunci Spam Event</button></td>
-				<td><button event="annunci|contactEvent">annunci Contact Event</button></td>
-			</tr>
-		</table>
-	</div>
-</div>
-
 <header>
 <h1>OLAF Websocket Log Client</h1>
 </header>
 <section id="intro">
 <form onsubmit="return false;">
-		<div>
-			<label for="serverUrl">Server Url&nbsp;&nbsp;</label><input id="serverUrl" type="text" size="50" value="ws://echo.websocket.org/"/>
-		</div>
-		<div style="margin-top:20px">
-			<span id="connectStatus" class="disconnected">DISCONNECTED</span>
-		</div>
+	<div>
+		<label for="serverUrl">Server Url&nbsp;&nbsp;</label><input id="serverUrl" type="text" size="50" value="ws://localhost:8014/websocket"/>  <button id="connect">Connect</button>
+	</div>
+	<div style="margin-top:20px">Connection Status: <span id="connectStatus" class="disconnected">DISCONNECTED</span></div>
+	<div>Registered Marketplaces: <span id="clientMarketplaces"></span></div>
 </form>
 </section>
 <section>
-<div id="clientMarketplaces">
-
-	<div id="mobileDe" class="clientMarketplace">
-		<h2>Mobile.de</h2>
-		<div>
-			<ul class="events">
-			<li class="spamEvent">Event 1</li>
-			<li class="contactEvent">Event 1</li>
-			<li class="contactEvent">Event 1</li>
-			<li class="spamEvent">Event 1</li>
-			<li class="contactEvent">Event 1</li>
-			</ul>
-		</div>
+	<div id="olafServerEvents">
+		<ul class="events">
+		</ul>
 	</div>
-	<div id="annunci" class="clientMarketplace">
-		<h2>Annunci</h2>
-		<div>
-			<ul class="events">
-			<li class="spamEvent">Event 1</li>
-			<li class="contactEvent">Event 1</li>
-			<li class="contactEvent">Event 1</li>
-			<li class="spamEvent">Event 1</li>
-			<li class="contactEvent">Event 1</li>
-			</ul>
-		</div>
-	</div>
-</div>
 </section>
+
 </body>
 </html>
