@@ -25,7 +25,7 @@ public class ContactController extends AbstractFormController {
 
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-		String ip = request.getRemoteAddr();
+		String ip = request.getHeader("X-mobile-source-ip");
 		if (ip != null) {
 			Contact contact = (Contact)command;
 			if (contact.getMarketplace().equals(0)) {
